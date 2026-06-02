@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Detalhes do Componente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">Detalhes do Componente</h1>
+            <a href="/componentes" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Nome</h6>
+                                <p class="h5"><strong>
+                                        <%= componente.nome %>
+                                    </strong></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Categoria</h6>
+                                <p><span class="badge bg-info">
+                                        <%= componente.categoria %>
+                                    </span></p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Quantidade em Estoque</h6>
+                                <p>
+                                    <% if (componente.quantidadeDisponivel> 5) { %>
+                                        <span class="badge bg-success">
+                                            <%= componente.quantidadeDisponivel %> unidades
+                                        </span>
+                                        <% } else if (componente.quantidadeDisponivel> 0) { %>
+                                            <span class="badge bg-warning">
+                                                <%= componente.quantidadeDisponivel %> unidades
+                                            </span>
+                                            <% } else { %>
+                                                <span class="badge bg-danger">Fora de estoque</span>
+                                                <% } %>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Preço Unitário</h6>
+                                <p><strong>R$ <%= componente.precoUnitario.toFixed(2) %></strong></p>
+                            </div>
+                        </div>
+
+                        <% if (componente.fornecedor) { %>
+                            <div class="mb-4">
+                                <h6 class="text-muted">Fornecedor</h6>
+                                <p>
+                                    <%= componente.fornecedor %>
+                                </p>
+                            </div>
+                            <% } %>
+
+                                <% if (componente.descricao) { %>
+                                    <div class="mb-4">
+                                        <h6 class="text-muted">Descrição</h6>
+                                        <p>
+                                            <%= componente.descricao %>
+                                        </p>
+                                    </div>
+                                    <% } %>
+
+                                        <div class="alert alert-info">
+                                            <strong>Valor Total em Estoque:</strong> R$ <%=
+                                                (componente.quantidadeDisponivel * componente.precoUnitario).toFixed(2)
+                                                %>
+                                        </div>
+
+                    </div>
+                    <div class="card-footer d-flex gap-2">
+                        <a href="/componentes/<%= componente._id %>/editar" class="btn btn-outline-primary">Editar</a>
+                        <form action="/componentes/<%= componente._id %>/deletar" method="post" class="d-inline"
+                            onsubmit="return confirm('Tem certeza?')">
+                            <button type="submit" class="btn btn-outline-danger">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AutoRental</title>
+  <link rel="stylesheet" href="/css/stylesite.css">
+  <style>
+    /* pequenos ajustes locais para garantir bom layout do card na reserva */
+    #carro-reserva .car-image img { width: 220px; height:140px; object-fit:cover; border-radius:8px; }
+    #carro-reserva .car-info { overflow:hidden; }
+    #carro-reserva { background: #fff; padding:16px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.06); max-width:900px; margin:0 auto 20px; display:flex; gap:18px; align-items:center; }
+    #carro-reserva .meta { font-size:14px; color:#333; }
+    .msg-info { max-width:900px; margin:8px auto 24px; color:#555; }
+  </style>
+</head>
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <div class="logo">
+        <svg class="logo-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 17h14v-5H5v5z"/><path d="M3 11l3-7h12l3 7"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/>
+        </svg>
+        <h1>AutoRental</h1>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="container">
+    <div class="section-header">
+      <h2 id="section-title">Escolha seu Veículo</h2>
+      <p class="section-description" id="section-desc">Selecione um carro para realizar a reserva.</p>
+    </div>
+
+    <!-- LISTA -->
+    <div id="lista-carros">
+      <div class="car-grid"></div>
+    </div>
+
+    <!-- RESERVA -->
+    <div id="reserva-section" style="display:none; margin-top: 35px;">
+      <div id="carro-reserva" class="car-card" style="margin-bottom: 12px; display:none;"></div>
+      <div id="carro-reserva-msg" class="msg-info" style="display:none;"></div>
+
+      <div class="card-white">
+        <h3>Dados da Reserva</h3>
+        <form id="formReserva" class="form-grid">
+          <div class="form-group">
+            <label>Nome do Cliente</label>
+            <input type="text" id="cliente" required />
+          </div>
+
+          <div class="form-group">
+            <label>Data de Retirada</label>
+            <input type="date" id="dataRetirada" required />
+          </div>
+
+          <div class="form-group">
+            <label>Data de Devolução</label>
+            <input type="date" id="dataDevolucao" required />
+          </div>
+
+          <div class="form-group">
+            <label>Forma de Pagamento</label>
+            <select id="pagamento" required>
+              <option value="">Selecione</option>
+              <option value="Cartão">Cartão</option>
+              <option value="Pix">Pix</option>
+              <option value="Dinheiro">Dinheiro</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Confirmar Reserva</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <p>&copy; 2025 AutoRental. Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== Emulação (permanece opcional) =====
+const originalFetch = window.fetch;
+window.fetch = async (url, options) => {
+  if (url === '/api/reservas' && options?.method === 'POST') {
+    console.log("🔧 RESERVA EMULADA:", JSON.parse(options.body));
+    return new Response(JSON.stringify({ sucesso:true, mensagem:"Reserva feita com sucesso!" }), { status:200, headers:{'Content-Type':'application/json'} });
+  }
+  return originalFetch(url, options);
+};
+
+// ===== Helpers =====
+function saveSelectedCarToSession(car) {
+  // car = objeto com _id, marca, modelo, ano, placa, imagem (opcional)
+  try { sessionStorage.setItem('selectedCar', JSON.stringify(car)); } catch(e) { console.warn("sessionStorage falhou", e); }
+}
+function readSelectedCarFromSession() {
+  try { const s = sessionStorage.getItem('selectedCar'); return s?JSON.parse(s):null; } catch(e){return null;}
+}
+function clearSelectedCarSession() { try{ sessionStorage.removeItem('selectedCar'); }catch(e){} }
+
+// ===== Carregar lista de carros (modificado para salvar dados no click) =====
+async function carregarCarros() {
+  try {
+    const res = await fetch('/api/carros');
+    const carros = await res.json();
+    const grid = document.querySelector('.car-grid');
+    grid.innerHTML = '';
+
+    carros.forEach(c => {
+      // criamos JSON inline com dados essenciais para sessão
+      const short = {
+        _id: c._id,
+        marca: c.marca,
+        modelo: c.modelo,
+        ano: c.ano,
+        placa: c.placa,
+        imagem: c.imagem ? `/api/carros/${c._id}/imagem` : null
+      };
+
+      grid.innerHTML += `
+        <div class="car-card" style="margin-bottom:16px;">
+          <div class="car-image"><img src="${short.imagem || ''}" alt="${c.modelo}" style="width:240px;height:140px;object-fit:cover;border-radius:8px;"></div>
+          <div class="car-info">
+            <h3 class="car-title">${c.marca} ${c.modelo}</h3>
+            <div class="car-details"><div class="detail-item"><span>Ano: ${c.ano}</span></div><div class="detail-item"><span>Placa: ${c.placa}</span></div></div>
+            <div style="margin-top:10px;">
+              <button class="btn btn-primary" onclick='selectAndGo(${JSON.stringify(short).replace(/</g,"\\u003c")})'>Alugar Agora</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  } catch(err) {
+    console.error("Erro ao carregar carros:", err);
+    document.querySelector('.car-grid').innerHTML = '<p>Erro ao carregar carros.</p>';
+  }
+}
+
+// função chamada no botão: salva no sessionStorage e navega para /site (sem query também funciona)
+function selectAndGo(car) {
+  // salva e navega
+  saveSelectedCarToSession(car);
+  // navega para a própria página de reserva - sem query (ou você pode usar ?carro=id)
+  window.location.href = window.location.pathname + '?carro=' + encodeURIComponent(car._id);
+}
+
+// ===== Mostrar carro no bloco de reserva (usa preferencialmente sessionStorage, senão API) =====
+async function showSelectedCarOnReserve(idFromQuery) {
+  const container = document.getElementById('carro-reserva');
+  const msg = document.getElementById('carro-reserva-msg');
+
+  // 1) tentar sessionStorage primeiro
+  const fromSession = readSelectedCarFromSession();
+  if (fromSession && (!idFromQuery || fromSession._id === idFromQuery)) {
+    // mostra imediatamente com dados da sessão
+    container.style.display = 'flex';
+    msg.style.display = 'none';
+    container.innerHTML = `
+      <div class="car-image"><img src="${fromSession.imagem || ''}" alt="${fromSession.modelo}"></div>
+      <div class="car-info">
+        <h3 class="car-title">${fromSession.marca} ${fromSession.modelo}</h3>
+        <div class="car-details meta">
+          <div><strong>Ano:</strong> ${fromSession.ano}</div>
+          <div><strong>Placa:</strong> ${fromSession.placa}</div>
+        </div>
+      </div>
+    `;
+    // keep window.carroSelecionado in sync
+    window.carroSelecionado = fromSession._id;
+    return;
+  }
+
+  // 2) se veio ?carro=ID, tentar buscar na API
+  if (idFromQuery) {
+    try {
+      const res = await fetch('/api/carros/' + encodeURIComponent(idFromQuery));
+      if (!res.ok) throw new Error('fetch falhou: ' + res.status);
+      const carro = await res.json();
+      container.style.display = 'flex';
+      msg.style.display = 'none';
+      container.innerHTML = `
+        <div class="car-image"><img src="/api/carros/${carro._id}/imagem" alt="${carro.modelo}"></div>
+        <div class="car-info">
+          <h3 class="car-title">${carro.marca} ${carro.modelo}</h3>
+          <div class="car-details meta">
+            <div><strong>Ano:</strong> ${carro.ano}</div>
+            <div><strong>Placa:</strong> ${carro.placa}</div>
+          </div>
+        </div>
+      `;
+      window.carroSelecionado = carro._id;
+      // also save to session so next loads are instant
+      saveSelectedCarToSession({
+        _id: carro._id, marca: carro.marca, modelo: carro.modelo, ano: carro.ano, placa: carro.placa,
+        imagem: `/api/carros/${carro._id}/imagem`
+      });
+      return;
+    } catch(err) {
+      console.warn("Erro buscando carro pela API:", err);
+      // fallback para mensagem
+      container.style.display = 'none';
+      msg.style.display = 'block';
+      msg.innerText = "Não foi possível carregar os dados do carro selecionado agora. Você ainda pode preencher a reserva manualmente.";
+      return;
+    }
+  }
+
+  // 3) se não achar nada
+  container.style.display = 'none';
+  msg.style.display = 'block';
+  msg.innerText = "Nenhum carro selecionado. Volte à lista e escolha um carro para alugar.";
+}
+
+// ===== Enviar reserva =====
+document.getElementById('formReserva').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const dados = {
+    carro: window.carroSelecionado || null,
+    cliente: document.getElementById('cliente').value,
+    dataRetirada: document.getElementById('dataRetirada').value,
+    dataDevolucao: document.getElementById('dataDevolucao').value,
+    pagamento: document.getElementById('pagamento').value
+  };
+
+  try {
+    const res = await fetch('/api/reservas', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(dados) });
+    const json = await res.json();
+    alert(json.mensagem || 'Reserva realizada!');
+    // limpar seleção e voltar à lista
+    clearSelectedCarSession();
+    document.getElementById('reserva-section').style.display = 'none';
+    document.getElementById('lista-carros').style.display = 'block';
+    document.getElementById('formReserva').reset();
+    document.getElementById('carro-reserva').style.display = 'none';
+    // limpar query string para não reabrir automaticamente
+    history.replaceState(null, '', window.location.pathname);
+    carregarCarros();
+  } catch(err) {
+    console.error('Erro enviando reserva:', err);
+    alert('Erro ao realizar reserva.');
+  }
+});
+
+// ===== Inicialização inteligente =====
+(async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const idCarro = params.get('carro');
+
+  if (idCarro) {
+    // abrir a seção de reserva e tentar mostrar o carro (priorizando sessionStorage)
+    document.getElementById('lista-carros').style.display = 'none';
+    document.getElementById('reserva-section').style.display = 'block';
+    document.getElementById('section-title').innerText = 'Reserva de Veículo';
+    document.getElementById('section-desc').innerText = 'Preencha os dados para concluir sua reserva.';
+    await showSelectedCarOnReserve(idCarro);
+  } else {
+    // mostra lista (e carrega)
+    document.getElementById('lista-carros').style.display = 'block';
+    await carregarCarros();
+  }
+})();
+</script>
+</body>
+</html>

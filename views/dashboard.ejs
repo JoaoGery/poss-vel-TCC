@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sistema de Assistência Técnica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #2563eb !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        /* Main Content */
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #1f2937;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card-item {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+            border-color: #2563eb;
+            text-decoration: none;
+        }
+
+        .card-header-custom {
+            padding: 1.5rem;
+            background: white;
+            border-bottom: 2px solid #f3f4f6;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #f0f9ff;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .card-body-custom {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-description {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .card-actions a {
+            text-align: center;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary-card {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary-card:hover {
+            background: #1d4ed8;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary-card {
+            background: white;
+            color: #2563eb;
+            border: 1.5px solid #2563eb;
+        }
+
+        .btn-secondary-card:hover {
+            background: #f0f9ff;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        /* Recent Table */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 2rem;
+            text-align: center;
+            color: #6b7280;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .container-main {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">🔧 AssistTech</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/auth/login">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container-fluid">
+            <h1>🔧 Sistema de Assistência Técnica</h1>
+            <p>Gerencie manutenções de computadores, clientes e componentes com eficiência</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container-main">
+        <!-- Estatísticas -->
+        <h2 class="section-title">📊 Estatísticas</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">
+                    <%= totalClientes || 0 %>
+                </div>
+                <div class="stat-label">Clientes Cadastrados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    <%= totalManutencoes || 0 %>
+                </div>
+                <div class="stat-label">Manutenções Registradas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #f59e0b;">
+                    <%= totalEmAnalise || 0 %>
+                </div>
+                <div class="stat-label">Em Análise</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #3b82f6;">
+                    <%= totalEmReparo || 0 %>
+                </div>
+                <div class="stat-label">Em Reparo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #10b981;">
+                    <%= totalConcluidas || 0 %>
+                </div>
+                <div class="stat-label">Concluídas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    <%= totalComponentes || 0 %>
+                </div>
+                <div class="stat-label">Componentes em Estoque</div>
+            </div>
+        </div>
+
+        <!-- Acesso Rápido -->
+        <h2 class="section-title" style="margin-top: 3rem;">⚡ Acesso Rápido</h2>
+
+        <div class="cards-grid">
+            <!-- Clientes -->
+            <a href="/cliente" class="card-item">
+                <div class="card-header-custom">
+                    <div class="card-icon">👥</div>
+                    <div class="card-title">Clientes</div>
+                </div>
+                <div class="card-body-custom">
+                    <p class="card-description">Gerencie informações dos seus clientes.</p>
+                    <div class="card-actions">
+                        <a href="/cliente" class="btn-primary-card">Listar</a>
+                        <a href="/cliente/novo" class="btn-secondary-card">Novo</a>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Manutenções -->
+            <a href="/manutencoes" class="card-item">
+                <div class="card-header-custom">
+                    <div class="card-icon">🔧</div>
+                    <div class="card-title">Manutenções</div>
+                </div>
+                <div class="card-body-custom">
+                    <p class="card-description">Registre e acompanhe manutenções de computadores.</p>
+                    <div class="card-actions">
+                        <a href="/manutencoes" class="btn-primary-card">Listar</a>
+                        <a href="/manutencoes/novo" class="btn-secondary-card">Nova</a>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Componentes -->
+            <a href="/componentes" class="card-item">
+                <div class="card-header-custom">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">Componentes</div>
+                </div>
+                <div class="card-body-custom">
+                    <p class="card-description">Controle de estoque de componentes e peças.</p>
+                    <div class="card-actions">
+                        <a href="/componentes" class="btn-primary-card">Listar</a>
+                        <a href="/componentes/novo" class="btn-secondary-card">Novo</a>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Manutenções Recentes -->
+        <% if (manutencoes && manutencoes.length> 0) { %>
+            <h2 class="section-title">📝 Manutenções Recentes</h2>
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Computador</th>
+                                <th>Problema</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% manutencoes.forEach(function(manutencao) { %>
+                                <tr>
+                                    <td><small><strong>
+                                                <%= new Date(manutencao.dataEntrada).toLocaleDateString('pt-BR') %>
+                                            </strong></small></td>
+                                    <td><strong>
+                                            <%= manutencao.cliente.nome %>
+                                        </strong></td>
+                                    <td><small>
+                                            <%= manutencao.marcaComputador %>
+                                                <%= manutencao.modeloComputador %>
+                                        </small></td>
+                                    <td><small>
+                                            <%= manutencao.descricaoProblema.substring(0, 35) %>...
+                                        </small></td>
+                                    <td>
+                                        <% let badgeClass='bg-secondary' ; let statusText='Desconhecido' ; if
+                                            (manutencao.status==='em_analise' ) { badgeClass='bg-warning' ;
+                                            statusText='Em Análise' ; } else if (manutencao.status==='em_reparo' ) {
+                                            badgeClass='bg-info' ; statusText='Em Reparo' ; } else if
+                                            (manutencao.status==='concluido' ) { badgeClass='bg-success' ;
+                                            statusText='Concluído' ; } %>
+                                            <span class="badge <%= badgeClass %>">
+                                                <%= statusText %>
+                                            </span>
+                                    </td>
+                                    <td>
+                                        <a href="/manutencoes/<%= manutencao._id %>"
+                                            class="btn btn-sm btn-outline-primary">Ver</a>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <% } %>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>© 2026 Sistema de Assistência Técnica | Todos os direitos reservados</p>
+                </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<div class="card container" style="max-width:520px; margin-top:24px;">
+  <h2>Cadastrar</h2>
+  <% if (error) { %><p style="color:#b91c1c"><%= error %></p><% } %>
+  <form action="/auth/register" method="POST">
+    <label>Nome:<input type="text" name="nome" value="<%= user.nome || '' %>" required></label><br>
+    <label>Email:<input type="email" name="email" value="<%= user.email || '' %>" required></label><br>
+    <label>Senha:<input type="password" name="senha" required></label><br>
+    <button class="btn" type="submit">Cadastrar</button>
+    <a class="btn alt" href="/auth/login">Já tenho conta</a>
+  </form>
+</div>
+<%- include('../partials/footer') %>

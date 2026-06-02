@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lista de Manutenções</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">Lista de Manutenções</h1>
+            <a href="/manutencoes/novo" class="btn btn-primary">Nova Manutenção</a>
+        </div>
+
+        <% if (typeof success !=='undefined' && success) { %>
+            <div class="alert alert-success">
+                <%= success %>
+            </div>
+            <% } %>
+                <% if (typeof error !=='undefined' && error) { %>
+                    <div class="alert alert-danger">
+                        <%= error %>
+                    </div>
+                    <% } %>
+
+                        <% if (!manutencoes || manutencoes.length===0) { %>
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    Nenhuma manutenção encontrada.
+                                </div>
+                            </div>
+                            <% } else { %>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Data Solicitação</th>
+                                                <th>Computador</th>
+                                                <th>Cliente</th>
+                                                <th>Problema</th>
+                                                <th>Status</th>
+                                                <th>Valor</th>
+                                                <th class="text-end">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% manutencoes.forEach(function(manutencao, i) { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= i + 1 %>
+                                                    </td>
+                                                    <td><small>
+                                                            <%= new
+                                                                Date(manutencao.dataSolicitacao).toLocaleDateString('pt-BR')
+                                                                %>
+                                                        </small></td>
+                                                    <td>
+                                                        <small>
+                                                            <strong>
+                                                                <%= manutencao.computador.modelo %>
+                                                            </strong><br>
+                                                            <%= manutencao.computador.serial %>
+                                                        </small>
+                                                    </td>
+                                                    <td>
+                                                        <%= manutencao.cliente.nome || '-' %>
+                                                    </td>
+                                                    <td><small>
+                                                            <%= manutencao.problemaSolicitado.substring(0, 40) %>...
+                                                        </small></td>
+                                                    <td>
+                                                        <% let badgeClass='bg-secondary' ; if
+                                                            (manutencao.status==='pendente' ) badgeClass='bg-warning' ;
+                                                            else if (manutencao.status==='em_andamento' )
+                                                            badgeClass='bg-info' ; else if
+                                                            (manutencao.status==='finalizado' ) badgeClass='bg-success'
+                                                            ; else if (manutencao.status==='cancelado' )
+                                                            badgeClass='bg-danger' ; %>
+                                                            <span class="badge <%= badgeClass %>">
+                                                                <%= manutencao.status %>
+                                                            </span>
+                                                    </td>
+                                                    <td>
+                                                        <% if (manutencao.valorTotal> 0) { %>
+                                                            R$ <%= manutencao.valorTotal.toFixed(2) %>
+                                                                <% } else { %>
+                                                                    -
+                                                                    <% } %>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <a href="/manutencoes/<%= manutencao._id %>"
+                                                            class="btn btn-sm btn-outline-info me-1">Visualizar</a>
+                                                        <a href="/manutencoes/<%= manutencao._id %>/editar"
+                                                            class="btn btn-sm btn-outline-secondary me-1">Editar</a>
+                                                        <form action="/manutencoes/<%= manutencao._id %>/deletar"
+                                                            method="post" class="d-inline"
+                                                            onsubmit="return confirm('Tem certeza?')">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-outline-danger">Excluir</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } %>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

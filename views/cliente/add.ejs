@@ -1,0 +1,85 @@
+<!-- views/cliente/add.ejs -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Adicionar Cliente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Adicionar Cliente</h1>
+        <a href="/cliente" class="btn btn-outline-secondary btn-sm">Voltar</a>
+    </div>
+
+    <% if (typeof success_msg !== 'undefined' && success_msg) { %>
+        <div class="alert alert-success"><%= success_msg %></div>
+    <% } %>
+
+    <% if (typeof error_msg !== 'undefined' && error_msg) { %>
+        <div class="alert alert-danger"><%= error_msg %></div>
+    <% } %>
+
+    <% if (typeof errors !== 'undefined' && errors.length) { %>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                <% errors.forEach(function(err){ %>
+                    <li><%= err.msg || err %></li>
+                <% }) %>
+            </ul>
+        </div>
+    <% } %>
+
+    <form action="/cliente/add" method="POST" class="row g-3">
+        <div class="col-md-6">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" required value="<%= cliente ? cliente.nome : '' %>">
+        </div>
+
+        <div class="col-md-6">
+            <label for="documento" class="form-label">CPF / CNPJ</label>
+            <input type="text" class="form-control" id="documento" name="documento" placeholder="Somente números" value="<%= cliente ? cliente.documento : '' %>">
+        </div>
+
+        <div class="col-md-6">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="email" name="email" value="<%= cliente ? cliente.email : '' %>">
+        </div>
+
+        <div class="col-md-6">
+            <label for="telefone" class="form-label">Telefone</label>
+            <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(00) 00000-0000" value="<%= cliente ? cliente.telefone : '' %>">
+        </div>
+
+        <div class="col-12">
+            <label for="endereco" class="form-label">Endereço</label>
+            <input type="text" class="form-control" id="endereco" name="endereco" value="<%= cliente ? cliente.endereco : '' %>">
+        </div>
+
+        <div class="col-md-4">
+            <label for="cidade" class="form-label">Cidade</label>
+            <input type="text" class="form-control" id="cidade" name="cidade" value="<%= cliente ? cliente.cidade : '' %>">
+        </div>
+
+        <div class="col-md-4">
+            <label for="estado" class="form-label">Estado</label>
+            <input type="text" class="form-control" id="estado" name="estado" placeholder="SP, RJ, etc." value="<%= cliente ? cliente.estado : '' %>">
+        </div>
+
+        <div class="col-md-4">
+            <label for="cep" class="form-label">CEP</label>
+            <input type="text" class="form-control" id="cep" name="cep" placeholder="00000-000" value="<%= cliente ? cliente.cep : '' %>">
+        </div>
+
+        <div class="col-12 d-flex justify-content-end gap-2">
+            <a href="/cliente" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar Cliente</button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

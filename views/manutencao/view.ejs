@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Detalhes da Manutenção</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">Detalhes da Manutenção</h1>
+            <a href="/manutencoes" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Informações Gerais -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Informações Gerais</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Computador</h6>
+                                <p><strong>
+                                        <%= manutencao.computador.modelo %>
+                                    </strong><br><small>
+                                        <%= manutencao.computador.serial %>
+                                    </small></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Cliente</h6>
+                                <p><strong>
+                                        <%= manutencao.cliente.nome %>
+                                    </strong></p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Status</h6>
+                                <% let badgeClass='bg-secondary' ; if (manutencao.status==='pendente' )
+                                    badgeClass='bg-warning' ; else if (manutencao.status==='em_andamento' )
+                                    badgeClass='bg-info' ; else if (manutencao.status==='finalizado' )
+                                    badgeClass='bg-success' ; else if (manutencao.status==='cancelado' )
+                                    badgeClass='bg-danger' ; %>
+                                    <p><span class="badge <%= badgeClass %>">
+                                            <%= manutencao.status %>
+                                        </span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Data Solicitação</h6>
+                                <p>
+                                    <%= new Date(manutencao.dataSolicitacao).toLocaleDateString('pt-BR') %>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted">Problema Solicitado</h6>
+                            <p>
+                                <%= manutencao.problemaSolicitado %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnóstico e Serviços -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Informações de Manutenção</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (manutencao.dataInicio) { %>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Data Início</h6>
+                                    <p>
+                                        <%= new Date(manutencao.dataInicio).toLocaleString('pt-BR') %>
+                                    </p>
+                                </div>
+                                <% if (manutencao.dataFinalizacao) { %>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted">Data Finalização</h6>
+                                        <p>
+                                            <%= new Date(manutencao.dataFinalizacao).toLocaleString('pt-BR') %>
+                                        </p>
+                                    </div>
+                                    <% } %>
+                            </div>
+                            <% } %>
+
+                                <% if (manutencao.diagnostico) { %>
+                                    <div class="mb-3">
+                                        <h6 class="text-muted">Diagnóstico</h6>
+                                        <p>
+                                            <%= manutencao.diagnostico %>
+                                        </p>
+                                    </div>
+                                    <% } %>
+
+                                        <% if (manutencao.servicosRealizados) { %>
+                                            <div class="mb-3">
+                                                <h6 class="text-muted">Serviços Realizados</h6>
+                                                <p>
+                                                    <%= manutencao.servicosRealizados %>
+                                                </p>
+                                            </div>
+                                            <% } %>
+
+                                                <% if (manutencao.pecasTrocadas) { %>
+                                                    <div class="mb-3">
+                                                        <h6 class="text-muted">Peças Trocadas</h6>
+                                                        <p>
+                                                            <%= manutencao.pecasTrocadas %>
+                                                        </p>
+                                                    </div>
+                                                    <% } %>
+
+                                                        <% if (manutencao.valorTotal> 0) { %>
+                                                            <div class="mb-3">
+                                                                <h6 class="text-muted">Valor Total</h6>
+                                                                <p><strong>R$ <%= manutencao.valorTotal.toFixed(2) %>
+                                                                            </strong></p>
+                                                            </div>
+                                                            <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="d-flex gap-2">
+                    <a href="/manutencoes/<%= manutencao._id %>/editar" class="btn btn-outline-primary">Editar</a>
+                    <form action="/manutencoes/<%= manutencao._id %>/deletar" method="post" class="d-inline"
+                        onsubmit="return confirm('Tem certeza?')">
+                        <button type="submit" class="btn btn-outline-danger">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
