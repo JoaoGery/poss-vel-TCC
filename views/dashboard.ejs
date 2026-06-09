@@ -324,7 +324,7 @@
 
         <div class="cards-grid">
             <!-- Clientes -->
-            <a href="/cliente" class="card-item">
+            <div class="card-item">
                 <div class="card-header-custom">
                     <div class="card-icon">👥</div>
                     <div class="card-title">Clientes</div>
@@ -336,10 +336,10 @@
                         <a href="/cliente/novo" class="btn-secondary-card">Novo</a>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <!-- Manutenções -->
-            <a href="/manutencoes" class="card-item">
+            <div class="card-item">
                 <div class="card-header-custom">
                     <div class="card-icon">🔧</div>
                     <div class="card-title">Manutenções</div>
@@ -351,10 +351,10 @@
                         <a href="/manutencoes/novo" class="btn-secondary-card">Nova</a>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <!-- Componentes -->
-            <a href="/componentes" class="card-item">
+            <div class="card-item">
                 <div class="card-header-custom">
                     <div class="card-icon">📦</div>
                     <div class="card-title">Componentes</div>
@@ -366,7 +366,7 @@
                         <a href="/componentes/novo" class="btn-secondary-card">Novo</a>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
 
         <!-- Manutenções Recentes -->
@@ -392,14 +392,14 @@
                                                 <%= new Date(manutencao.dataEntrada).toLocaleDateString('pt-BR') %>
                                             </strong></small></td>
                                     <td><strong>
-                                            <%= manutencao.cliente.nome %>
+                                            <%= manutencao.cliente?.nome || 'Cliente removido' %>
                                         </strong></td>
                                     <td><small>
                                             <%= manutencao.marcaComputador %>
                                                 <%= manutencao.modeloComputador %>
                                         </small></td>
                                     <td><small>
-                                            <%= manutencao.descricaoProblema.substring(0, 35) %>...
+                                            <%= (manutencao.descricaoProblema || '').substring(0, 35) %>...
                                         </small></td>
                                     <td>
                                         <% let badgeClass='bg-secondary' ; let statusText='Desconhecido' ; if

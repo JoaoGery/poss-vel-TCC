@@ -11,9 +11,42 @@
 <body>
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="h3 mb-0">📦 Componentes em Estoque</h1>
-            <a href="/componentes/novo" class="btn btn-primary">Adicionar Componente</a>
+            <h1 class="h3 mb-0">Componentes em Estoque</h1>
+            <div class="d-flex gap-2">
+                <a href="/" class="btn btn-outline-primary">Dashboard</a>
+                <a href="/componentes/novo" class="btn btn-primary">Adicionar Componente</a>
+            </div>
         </div>
+
+        <form class="card mb-3" method="get" action="/componentes">
+            <div class="card-body">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">Pesquisar</label>
+                        <input
+                            type="search"
+                            name="q"
+                            class="form-control"
+                            value="<%= typeof q !== 'undefined' ? q : '' %>"
+                            placeholder="Nome, fornecedor ou descrição">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Categoria</label>
+                        <select class="form-select" name="categoria">
+                            <option value="">Todas</option>
+                            <% ['Processador', 'RAM', 'SSD', 'HDD', 'Fonte', 'Placa-Mãe', 'Cooler', 'Placa de Vídeo', 'Outro'].forEach(function(cat) { %>
+                                <option value="<%= cat %>" <%= categoria === cat ? 'selected' : '' %>><%= cat %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
 
         <% if (typeof success !=='undefined' && success) { %>
             <div class="alert alert-success">
@@ -71,7 +104,7 @@
                                                                     <span class="badge bg-danger">0</span>
                                                                     <% } %>
                                                     </td>
-                                                    <td>R$ <%= componente.precoUnitario.toFixed(2) %>
+                                                    <td>R$ <%= Number(componente.precoUnitario || 0).toFixed(2) %>
                                                     </td>
                                                     <td><small>
                                                             <%= componente.fornecedor || '-' %>

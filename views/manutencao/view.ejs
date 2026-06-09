@@ -5,147 +5,229 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Detalhes da Manutenção</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f7fb;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
+        }
+
+        .page-title {
+            font-weight: 700;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-size: .9rem;
+            margin-bottom: .2rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 
 <body>
+
     <div class="container py-4">
+
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0">Detalhes da Manutenção</h1>
-            <a href="/manutencoes" class="btn btn-outline-secondary">Voltar</a>
-        </div>
+            <h1 class="page-title">🔧 Detalhes da Manutenção</h1>
 
-        <div class="row">
-            <div class="col-lg-8">
-                <!-- Informações Gerais -->
-                <div class="card mb-3">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Informações Gerais</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Computador</h6>
-                                <p><strong>
-                                        <%= manutencao.computador.modelo %>
-                                    </strong><br><small>
-                                        <%= manutencao.computador.serial %>
-                                    </small></p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Cliente</h6>
-                                <p><strong>
-                                        <%= manutencao.cliente.nome %>
-                                    </strong></p>
-                            </div>
-                        </div>
+            <div class="d-flex gap-2">
+                <a href="/" class="btn btn-outline-primary">
+                    Dashboard
+                </a>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Status</h6>
-                                <% let badgeClass='bg-secondary' ; if (manutencao.status==='pendente' )
-                                    badgeClass='bg-warning' ; else if (manutencao.status==='em_andamento' )
-                                    badgeClass='bg-info' ; else if (manutencao.status==='finalizado' )
-                                    badgeClass='bg-success' ; else if (manutencao.status==='cancelado' )
-                                    badgeClass='bg-danger' ; %>
-                                    <p><span class="badge <%= badgeClass %>">
-                                            <%= manutencao.status %>
-                                        </span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="text-muted">Data Solicitação</h6>
-                                <p>
-                                    <%= new Date(manutencao.dataSolicitacao).toLocaleDateString('pt-BR') %>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <h6 class="text-muted">Problema Solicitado</h6>
-                            <p>
-                                <%= manutencao.problemaSolicitado %>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Diagnóstico e Serviços -->
-                <div class="card mb-3">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0">Informações de Manutenção</h5>
-                    </div>
-                    <div class="card-body">
-                        <% if (manutencao.dataInicio) { %>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <h6 class="text-muted">Data Início</h6>
-                                    <p>
-                                        <%= new Date(manutencao.dataInicio).toLocaleString('pt-BR') %>
-                                    </p>
-                                </div>
-                                <% if (manutencao.dataFinalizacao) { %>
-                                    <div class="col-md-6">
-                                        <h6 class="text-muted">Data Finalização</h6>
-                                        <p>
-                                            <%= new Date(manutencao.dataFinalizacao).toLocaleString('pt-BR') %>
-                                        </p>
-                                    </div>
-                                    <% } %>
-                            </div>
-                            <% } %>
-
-                                <% if (manutencao.diagnostico) { %>
-                                    <div class="mb-3">
-                                        <h6 class="text-muted">Diagnóstico</h6>
-                                        <p>
-                                            <%= manutencao.diagnostico %>
-                                        </p>
-                                    </div>
-                                    <% } %>
-
-                                        <% if (manutencao.servicosRealizados) { %>
-                                            <div class="mb-3">
-                                                <h6 class="text-muted">Serviços Realizados</h6>
-                                                <p>
-                                                    <%= manutencao.servicosRealizados %>
-                                                </p>
-                                            </div>
-                                            <% } %>
-
-                                                <% if (manutencao.pecasTrocadas) { %>
-                                                    <div class="mb-3">
-                                                        <h6 class="text-muted">Peças Trocadas</h6>
-                                                        <p>
-                                                            <%= manutencao.pecasTrocadas %>
-                                                        </p>
-                                                    </div>
-                                                    <% } %>
-
-                                                        <% if (manutencao.valorTotal> 0) { %>
-                                                            <div class="mb-3">
-                                                                <h6 class="text-muted">Valor Total</h6>
-                                                                <p><strong>R$ <%= manutencao.valorTotal.toFixed(2) %>
-                                                                            </strong></p>
-                                                            </div>
-                                                            <% } %>
-                    </div>
-                </div>
+                <a href="/manutencoes" class="btn btn-outline-secondary">
+                    Voltar para Manutenções
+                </a>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="d-flex gap-2">
-                    <a href="/manutencoes/<%= manutencao._id %>/editar" class="btn btn-outline-primary">Editar</a>
-                    <form action="/manutencoes/<%= manutencao._id %>/deletar" method="post" class="d-inline"
-                        onsubmit="return confirm('Tem certeza?')">
-                        <button type="submit" class="btn btn-outline-danger">Excluir</button>
-                    </form>
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                Informações Gerais
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Cliente</div>
+
+                        <div class="info-value">
+                            <%= manutencao.cliente?.nome || 'Não informado' %>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Status</div>
+
+                        <% let badgeClass = 'bg-secondary'; %>
+
+                        <% if (manutencao.status === 'em_analise') { %>
+                            <% badgeClass = 'bg-warning'; %>
+                        <% } %>
+
+                        <% if (manutencao.status === 'em_reparo') { %>
+                            <% badgeClass = 'bg-info'; %>
+                        <% } %>
+
+                        <% if (manutencao.status === 'concluido') { %>
+                            <% badgeClass = 'bg-success'; %>
+                        <% } %>
+
+                        <span class="badge <%= badgeClass %>">
+                            <%= manutencao.status %>
+                        </span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Marca do Computador</div>
+
+                        <div class="info-value">
+                            <%= manutencao.marcaComputador || 'Não informado' %>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Modelo do Computador</div>
+
+                        <div class="info-value">
+                            <%= manutencao.modeloComputador || 'Não informado' %>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Data de Entrada</div>
+
+                        <div class="info-value">
+                            <%= manutencao.dataEntrada ? new Date(manutencao.dataEntrada).toLocaleDateString('pt-BR') : '-' %>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="info-label">Data de Saída</div>
+
+                        <div class="info-value">
+                            <%= manutencao.dataSaida ? new Date(manutencao.dataSaida).toLocaleDateString('pt-BR') : '-' %>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
         </div>
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-light">
+                Problema Relatado
+            </div>
+
+            <div class="card-body">
+                <%= manutencao.descricaoProblema || 'Nenhuma descrição informada.' %>
+            </div>
+
+        </div>
+
+        <% if (manutencao.diagnosticoTecnico) { %>
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-light">
+                Diagnóstico Técnico
+            </div>
+
+            <div class="card-body">
+                <%= manutencao.diagnosticoTecnico %>
+            </div>
+
+        </div>
+
+        <% } %>
+
+        <% if (manutencao.observacoes) { %>
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-light">
+                Observações
+            </div>
+
+            <div class="card-body">
+                <%= manutencao.observacoes %>
+            </div>
+
+        </div>
+
+        <% } %>
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-light">
+                Informações Financeiras
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="info-label">Valor Total</div>
+
+                        <div class="info-value">
+                            R$
+                            <%= Number(manutencao.valorTotal || 0).toFixed(2) %>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a href="/"
+                class="btn btn-outline-primary">
+                Dashboard
+            </a>
+
+            <a href="/manutencoes/<%= manutencao._id %>/editar"
+                class="btn btn-primary">
+                Editar
+            </a>
+
+            <form
+                action="/manutencoes/<%= manutencao._id %>/deletar"
+                method="POST"
+                onsubmit="return confirm('Deseja realmente excluir esta manutenção?')">
+
+                <button
+                    type="submit"
+                    class="btn btn-danger">
+                    Excluir
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

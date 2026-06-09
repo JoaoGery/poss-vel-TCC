@@ -10,7 +10,10 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h1 class="h4 mb-0">Clientes</h1>
-            <a href="/cliente/novo" class="btn btn-primary">Novo Cliente</a>
+            <div class="d-flex gap-2">
+                <a href="/" class="btn btn-outline-primary">Dashboard</a>
+                <a href="/cliente/novo" class="btn btn-primary">Novo Cliente</a>
+            </div>
         </div>
 
         <form class="row g-2 mb-3" method="get" action="">
@@ -41,14 +44,14 @@
                     <tbody>
                         <% clientes.forEach(function(c, i) { %>
                             <tr>
-                                <td><%= c.id || (i + 1) %></td>
+                                <td><%= i + 1 %></td>
                                 <td><%= c.nome || '-' %></td>
                                 <td><%= c.email || '-' %></td>
                                 <td><%= c.telefone || '-' %></td>
-                                <td><%= c.criadoEm ? new Date(c.criadoEm).toLocaleDateString('pt-BR') : '-' %></td>
+                                <td><%= c.createdAt ? new Date(c.createdAt).toLocaleDateString('pt-BR') : '-' %></td>
                                 <td class="text-end">
-                                    <a href="/cliente/editar/<%= c.id %>" class="btn btn-sm btn-outline-primary me-1">Editar</a>
-                                    <form action="/cliente/excluir/<%= c.id %>" method="post" style="display:inline" onsubmit="return confirm('Confirma exclusão do cliente <%= (c.nome||'este cliente') %>?');">
+                                    <a href="/cliente/<%= c._id %>/editar" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+                                    <form action="/cliente/<%= c._id %>/deletar" method="post" style="display:inline" onsubmit="return confirm('Confirma exclusão do cliente <%= (c.nome||'este cliente') %>?');">
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
                                     </form>
                                 </td>

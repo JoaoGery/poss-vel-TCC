@@ -2,8 +2,24 @@ import Componente from '../models/componente.js';
 
 export const list = async (req, res) => {
   try {
-    const componentes = await Componente.find().lean();
-    res.render('componente/list', { componentes });
+    const q = (req.query.q || '').trim();
+    const categoria = (req.query.categoria || '').trim();
+    const filtro = {};
+
+    if (q) {
+      filtro.$or = [
+        { nome: { $regex: q, $options: 'i' } },
+        { fornecedor: { $regex: q, $options: 'i' } },
+        { descricao: { $regex: q, $options: 'i' } }
+      ];
+    }
+
+    if (categoria) {
+      filtro.categoria = categoria;
+    }
+
+    const componentes = await Componente.find(filtro).sort({ nome: 1 }).lean();
+    res.render('componente/list', { componentes, q, categoria });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao listar componentes');
@@ -68,7 +84,7 @@ export const update = async (req, res) => {
 
     Object.keys(update).forEach(k => update[k] === undefined && delete update[k]);
 
-    await Componente.findByIdAndUpdate(req.params.id, update);
+    await Componente.findByIdAndUpdate(req.params.id, update, { runValidators: true });
     res.redirect('/componentes');
   } catch (err) {
     console.error(err);

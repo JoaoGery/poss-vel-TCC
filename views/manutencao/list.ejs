@@ -2,115 +2,226 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lista de Manutenções</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f7fb;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,.05);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .page-title {
+            font-weight: 700;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="h3 mb-0">Lista de Manutenções</h1>
-            <a href="/manutencoes/novo" class="btn btn-primary">Nova Manutenção</a>
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title">Lista de Manutenções</h1>
+
+        <div class="d-flex gap-2">
+            <a href="/" class="btn btn-outline-primary">
+                Dashboard
+            </a>
+
+            <a href="/manutencoes/novo" class="btn btn-primary">
+                Nova Manutenção
+            </a>
+        </div>
+    </div>
+
+    <form class="card mb-4" method="get" action="/manutencoes">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label">Pesquisar</label>
+                    <input
+                        type="search"
+                        name="q"
+                        class="form-control"
+                        value="<%= typeof q !== 'undefined' ? q : '' %>"
+                        placeholder="Marca, modelo ou problema relatado">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        <option value="">Todos</option>
+                        <option value="em_analise" <%= status === 'em_analise' ? 'selected' : '' %>>Em análise</option>
+                        <option value="em_reparo" <%= status === 'em_reparo' ? 'selected' : '' %>>Em reparo</option>
+                        <option value="concluido" <%= status === 'concluido' ? 'selected' : '' %>>Concluído</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <% if (!manutencoes || manutencoes.length === 0) { %>
+
+        <div class="card">
+            <div class="card-body text-center">
+                Nenhuma manutenção cadastrada.
+            </div>
         </div>
 
-        <% if (typeof success !=='undefined' && success) { %>
-            <div class="alert alert-success">
-                <%= success %>
+    <% } else { %>
+
+        <div class="card">
+
+            <div class="card-header bg-primary text-white">
+                Manutenções Cadastradas
             </div>
-            <% } %>
-                <% if (typeof error !=='undefined' && error) { %>
-                    <div class="alert alert-danger">
-                        <%= error %>
-                    </div>
-                    <% } %>
 
-                        <% if (!manutencoes || manutencoes.length===0) { %>
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    Nenhuma manutenção encontrada.
-                                </div>
-                            </div>
-                            <% } else { %>
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover align-middle">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Data Solicitação</th>
-                                                <th>Computador</th>
-                                                <th>Cliente</th>
-                                                <th>Problema</th>
-                                                <th>Status</th>
-                                                <th>Valor</th>
-                                                <th class="text-end">Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% manutencoes.forEach(function(manutencao, i) { %>
-                                                <tr>
-                                                    <td>
-                                                        <%= i + 1 %>
-                                                    </td>
-                                                    <td><small>
-                                                            <%= new
-                                                                Date(manutencao.dataSolicitacao).toLocaleDateString('pt-BR')
-                                                                %>
-                                                        </small></td>
-                                                    <td>
-                                                        <small>
-                                                            <strong>
-                                                                <%= manutencao.computador.modelo %>
-                                                            </strong><br>
-                                                            <%= manutencao.computador.serial %>
-                                                        </small>
-                                                    </td>
-                                                    <td>
-                                                        <%= manutencao.cliente.nome || '-' %>
-                                                    </td>
-                                                    <td><small>
-                                                            <%= manutencao.problemaSolicitado.substring(0, 40) %>...
-                                                        </small></td>
-                                                    <td>
-                                                        <% let badgeClass='bg-secondary' ; if
-                                                            (manutencao.status==='pendente' ) badgeClass='bg-warning' ;
-                                                            else if (manutencao.status==='em_andamento' )
-                                                            badgeClass='bg-info' ; else if
-                                                            (manutencao.status==='finalizado' ) badgeClass='bg-success'
-                                                            ; else if (manutencao.status==='cancelado' )
-                                                            badgeClass='bg-danger' ; %>
-                                                            <span class="badge <%= badgeClass %>">
-                                                                <%= manutencao.status %>
-                                                            </span>
-                                                    </td>
-                                                    <td>
-                                                        <% if (manutencao.valorTotal> 0) { %>
-                                                            R$ <%= manutencao.valorTotal.toFixed(2) %>
-                                                                <% } else { %>
-                                                                    -
-                                                                    <% } %>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <a href="/manutencoes/<%= manutencao._id %>"
-                                                            class="btn btn-sm btn-outline-info me-1">Visualizar</a>
-                                                        <a href="/manutencoes/<%= manutencao._id %>/editar"
-                                                            class="btn btn-sm btn-outline-secondary me-1">Editar</a>
-                                                        <form action="/manutencoes/<%= manutencao._id %>/deletar"
-                                                            method="post" class="d-inline"
-                                                            onsubmit="return confirm('Tem certeza?')">
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-outline-danger">Excluir</button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                                <% }); %>
-                                        </tbody>
-                                    </table>
-                                </div>
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Problema</th>
+                            <th>Status</th>
+                            <th>Valor</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <% manutencoes.forEach(function(manutencao, index){ %>
+
+                        <tr>
+
+                            <td>
+                                <%= index + 1 %>
+                            </td>
+
+                            <td>
+                                <%= manutencao.cliente?.nome || '-' %>
+                            </td>
+
+                            <td>
+                                <%= manutencao.marcaComputador || '-' %>
+                            </td>
+
+                            <td>
+                                <%= manutencao.modeloComputador || '-' %>
+                            </td>
+
+                            <td>
+                                <%= (manutencao.descricaoProblema || '').substring(0, 40) %>
+                            </td>
+
+                            <td>
+
+                                <% let badgeClass = 'bg-secondary'; let statusText = 'Sem status'; %>
+
+                                <% if (manutencao.status === 'em_analise') { %>
+                                    <% badgeClass = 'bg-warning text-dark'; statusText = 'Em análise'; %>
                                 <% } %>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
+                                <% if (manutencao.status === 'em_reparo') { %>
+                                    <% badgeClass = 'bg-info text-dark'; statusText = 'Em reparo'; %>
+                                <% } %>
+
+                                <% if (manutencao.status === 'concluido') { %>
+                                    <% badgeClass = 'bg-success'; statusText = 'Concluído'; %>
+                                <% } %>
+
+                                <span class="badge <%= badgeClass %>">
+                                    <%= statusText %>
+                                </span>
+
+                            </td>
+
+                            <td>
+                                R$
+                                <%= Number(manutencao.valorTotal || 0).toFixed(2) %>
+                            </td>
+
+                            <td class="text-end">
+
+                                <a
+                                    href="/manutencoes/<%= manutencao._id %>"
+                                    class="btn btn-sm btn-outline-primary">
+                                    Visualizar
+                                </a>
+
+                                <a
+                                    href="/manutencoes/<%= manutencao._id %>/editar"
+                                    class="btn btn-sm btn-outline-secondary">
+                                    Editar
+                                </a>
+
+                                <form
+                                    action="/manutencoes/<%= manutencao._id %>/deletar"
+                                    method="POST"
+                                    class="d-inline"
+                                    onsubmit="return confirm('Deseja realmente excluir esta manutenção?')">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-sm btn-outline-danger">
+                                        Excluir
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                    <% }) %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    <% } %>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
 </html>

@@ -49,6 +49,7 @@ app.use((req, res, next) => {
 // Rotas principais
 // Rotas principais
 app.use('/cliente', clienteRouter);
+app.use('/clientes', clienteRouter);
 app.use('/auth', authRouter);
 
 // 🔧 Rotas de Assistência Técnica
