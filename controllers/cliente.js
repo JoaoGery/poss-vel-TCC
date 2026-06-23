@@ -1,13 +1,13 @@
 import Cliente from '../models/cliente.js';
 
 const clienteData = (body) => ({
-  nome: body.nome,
+  nome: (body.nome || '').trim(),
   documento: body.documento || '',
-  email: body.email,
-  telefone: body.telefone,
+  email: (body.email || '').trim().toLowerCase(),
+  telefone: (body.telefone || '').trim(),
   endereco: body.endereco || '',
   cidade: body.cidade || '',
-  estado: body.estado || '',
+  estado: (body.estado || '').trim().toUpperCase(),
   cep: body.cep || ''
 });
 
@@ -44,18 +44,24 @@ export const view = async (req, res) => {
 };
 
 export const formCreate = (req, res) => {
-  res.render('cliente/add', { cliente: {} });
+  res.render('cliente/add', { cliente: {}, error: null });
 };
 
 export const create = async (req, res) => {
   try {
     const data = clienteData(req.body);
+    if (!data.nome || !data.email || !data.telefone) {
+      return res.status(400).render('cliente/add', {
+        cliente: data,
+        error: 'Informe nome, e-mail e telefone para cadastrar o cliente.'
+      });
+    }
     await Cliente.create(data);
     res.redirect('/cliente');
   } catch (err) {
     console.error(err);
-    if (err.code === 11000) return res.status(400).send('Email já cadastrado');
-    res.status(500).send('Erro ao criar cliente');
+    const message = err.code === 11000 ? 'E-mail já cadastrado.' : 'Erro ao criar cliente.';
+    res.status(400).render('cliente/add', { cliente: req.body, error: message });
   }
 };
 
@@ -63,7 +69,7 @@ export const formEdit = async (req, res) => {
   try {
     const cliente = await Cliente.findById(req.params.id).lean();
     if (!cliente) return res.status(404).send('Cliente não encontrado');
-    res.render('cliente/edt', { cliente });
+    res.render('cliente/edt', { cliente, error: null });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao abrir edição');
@@ -72,11 +78,19 @@ export const formEdit = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    await Cliente.findByIdAndUpdate(req.params.id, clienteData(req.body), { runValidators: true });
+    const data = clienteData(req.body);
+    if (!data.nome || !data.email || !data.telefone) {
+      return res.status(400).render('cliente/edt', {
+        cliente: { ...data, _id: req.params.id },
+        error: 'Informe nome, e-mail e telefone para atualizar o cliente.'
+      });
+    }
+    await Cliente.findByIdAndUpdate(req.params.id, data, { runValidators: true });
     res.redirect('/cliente');
   } catch (err) {
     console.error(err);
-    res.status(500).send('Erro ao atualizar cliente');
+    const message = err.code === 11000 ? 'E-mail já cadastrado.' : 'Erro ao atualizar cliente.';
+    res.status(400).render('cliente/edt', { cliente: { ...req.body, _id: req.params.id }, error: message });
   }
 };
 

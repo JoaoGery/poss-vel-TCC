@@ -38,25 +38,32 @@ export const view = async (req, res) => {
 };
 
 export const formCreate = (req, res) => {
-  res.render('componente/form', { componente: {} });
+  res.render('componente/form', { componente: {}, error: null });
 };
 
 export const create = async (req, res) => {
   try {
     const data = {
-      nome: req.body.nome,
+      nome: (req.body.nome || '').trim(),
       categoria: req.body.categoria,
       quantidadeDisponivel: req.body.quantidadeDisponivel ? Number(req.body.quantidadeDisponivel) : 0,
       precoUnitario: req.body.precoUnitario ? Number(req.body.precoUnitario) : 0,
-      descricao: req.body.descricao,
-      fornecedor: req.body.fornecedor
+      descricao: (req.body.descricao || '').trim(),
+      fornecedor: (req.body.fornecedor || '').trim()
     };
+
+    if (!data.nome || !data.categoria) {
+      return res.status(400).render('componente/form', {
+        componente: data,
+        error: 'Informe o nome e a categoria do componente.'
+      });
+    }
 
     await Componente.create(data);
     res.redirect('/componentes');
   } catch (err) {
     console.error(err);
-    res.status(500).send('Erro ao criar componente');
+    res.status(400).render('componente/form', { componente: req.body, error: 'Erro ao criar componente.' });
   }
 };
 
@@ -64,7 +71,7 @@ export const formEdit = async (req, res) => {
   try {
     const componente = await Componente.findById(req.params.id).lean();
     if (!componente) return res.status(404).send('Componente não encontrado');
-    res.render('componente/form', { componente });
+    res.render('componente/form', { componente, error: null });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao abrir edição');
@@ -74,13 +81,20 @@ export const formEdit = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const update = {
-      nome: req.body.nome,
+      nome: (req.body.nome || '').trim(),
       categoria: req.body.categoria,
       quantidadeDisponivel: req.body.quantidadeDisponivel ? Number(req.body.quantidadeDisponivel) : 0,
       precoUnitario: req.body.precoUnitario ? Number(req.body.precoUnitario) : 0,
-      descricao: req.body.descricao,
-      fornecedor: req.body.fornecedor
+      descricao: (req.body.descricao || '').trim(),
+      fornecedor: (req.body.fornecedor || '').trim()
     };
+
+    if (!update.nome || !update.categoria) {
+      return res.status(400).render('componente/form', {
+        componente: { ...update, _id: req.params.id },
+        error: 'Informe o nome e a categoria do componente.'
+      });
+    }
 
     Object.keys(update).forEach(k => update[k] === undefined && delete update[k]);
 
@@ -88,7 +102,7 @@ export const update = async (req, res) => {
     res.redirect('/componentes');
   } catch (err) {
     console.error(err);
-    res.status(500).send('Erro ao atualizar componente');
+    res.status(400).render('componente/form', { componente: { ...req.body, _id: req.params.id }, error: 'Erro ao atualizar componente.' });
   }
 };
 

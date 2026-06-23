@@ -1,233 +1,83 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<%- include('../partials/header', { title: 'Detalhes da manutenção | AssistTech' }) %>
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Detalhes da Manutenção</title>
+<div class="container">
+  <% const statusMap = { em_analise: ['status-analysis', 'Em análise'], em_reparo: ['status-repair', 'Em reparo'], concluido: ['status-done', 'Concluído'] }; %>
+  <% const statusInfo = statusMap[manutencao.status] || ['bg-secondary text-white', 'Sem status']; %>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 page-heading">
+    <div>
+      <div class="page-eyebrow">Ordem de serviço</div>
+      <h1 class="page-title">Detalhes da manutenção</h1>
+      <p class="page-subtitle"><%= manutencao.marcaComputador || '-' %> <%= manutencao.modeloComputador || '' %> para <%= manutencao.cliente?.nome || 'cliente removido' %>.</p>
+    </div>
+    <div class="d-flex gap-2 align-items-start page-actions">
+      <a href="/manutencoes" class="btn btn-outline-secondary">Voltar</a>
+      <a href="/manutencoes/<%= manutencao._id %>/editar" class="btn btn-primary">Editar</a>
+    </div>
+  </div>
 
-    <style>
-        body {
-            background: #f4f7fb;
-        }
-
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
-        }
-
-        .page-title {
-            font-weight: 700;
-        }
-
-        .info-label {
-            color: #6b7280;
-            font-size: .9rem;
-            margin-bottom: .2rem;
-        }
-
-        .info-value {
-            font-size: 1rem;
-            font-weight: 500;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container py-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="page-title">🔧 Detalhes da Manutenção</h1>
-
-            <div class="d-flex gap-2">
-                <a href="/" class="btn btn-outline-primary">
-                    Dashboard
-                </a>
-
-                <a href="/manutencoes" class="btn btn-outline-secondary">
-                    Voltar para Manutenções
-                </a>
-            </div>
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <section class="content-card form-card mb-3">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="info-label">Cliente</div>
+            <div class="info-value"><%= manutencao.cliente?.nome || 'Não informado' %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-label">Status</div>
+            <div class="info-value"><span class="status-badge <%= statusInfo[0] %>"><%= statusInfo[1] %></span></div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-label">Entrada</div>
+            <div class="info-value"><%= manutencao.dataEntrada ? new Date(manutencao.dataEntrada).toLocaleDateString('pt-BR') : '-' %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-label">Saída</div>
+            <div class="info-value"><%= manutencao.dataSaida ? new Date(manutencao.dataSaida).toLocaleDateString('pt-BR') : '-' %></div>
+          </div>
         </div>
+      </section>
 
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                Informações Gerais
-            </div>
+      <section class="content-card form-card mb-3">
+        <h2 class="h5 mb-3">Problema relatado</h2>
+        <p class="mb-0"><%= manutencao.descricaoProblema || 'Nenhuma descrição informada.' %></p>
+      </section>
 
-            <div class="card-body">
+      <section class="content-card form-card mb-3">
+        <h2 class="h5 mb-3">Diagnóstico técnico</h2>
+        <p class="mb-0"><%= manutencao.diagnosticoTecnico || 'Diagnóstico ainda não informado.' %></p>
+      </section>
 
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Cliente</div>
-
-                        <div class="info-value">
-                            <%= manutencao.cliente?.nome || 'Não informado' %>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Status</div>
-
-                        <% let badgeClass = 'bg-secondary'; %>
-
-                        <% if (manutencao.status === 'em_analise') { %>
-                            <% badgeClass = 'bg-warning'; %>
-                        <% } %>
-
-                        <% if (manutencao.status === 'em_reparo') { %>
-                            <% badgeClass = 'bg-info'; %>
-                        <% } %>
-
-                        <% if (manutencao.status === 'concluido') { %>
-                            <% badgeClass = 'bg-success'; %>
-                        <% } %>
-
-                        <span class="badge <%= badgeClass %>">
-                            <%= manutencao.status %>
-                        </span>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Marca do Computador</div>
-
-                        <div class="info-value">
-                            <%= manutencao.marcaComputador || 'Não informado' %>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Modelo do Computador</div>
-
-                        <div class="info-value">
-                            <%= manutencao.modeloComputador || 'Não informado' %>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Data de Entrada</div>
-
-                        <div class="info-value">
-                            <%= manutencao.dataEntrada ? new Date(manutencao.dataEntrada).toLocaleDateString('pt-BR') : '-' %>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-label">Data de Saída</div>
-
-                        <div class="info-value">
-                            <%= manutencao.dataSaida ? new Date(manutencao.dataSaida).toLocaleDateString('pt-BR') : '-' %>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-        <div class="card mb-4">
-
-            <div class="card-header bg-light">
-                Problema Relatado
-            </div>
-
-            <div class="card-body">
-                <%= manutencao.descricaoProblema || 'Nenhuma descrição informada.' %>
-            </div>
-
-        </div>
-
-        <% if (manutencao.diagnosticoTecnico) { %>
-
-        <div class="card mb-4">
-
-            <div class="card-header bg-light">
-                Diagnóstico Técnico
-            </div>
-
-            <div class="card-body">
-                <%= manutencao.diagnosticoTecnico %>
-            </div>
-
-        </div>
-
-        <% } %>
-
-        <% if (manutencao.observacoes) { %>
-
-        <div class="card mb-4">
-
-            <div class="card-header bg-light">
-                Observações
-            </div>
-
-            <div class="card-body">
-                <%= manutencao.observacoes %>
-            </div>
-
-        </div>
-
-        <% } %>
-
-        <div class="card mb-4">
-
-            <div class="card-header bg-light">
-                Informações Financeiras
-            </div>
-
-            <div class="card-body">
-
-                <div class="row">
-
-                    <div class="col-md-4">
-                        <div class="info-label">Valor Total</div>
-
-                        <div class="info-value">
-                            R$
-                            <%= Number(manutencao.valorTotal || 0).toFixed(2) %>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="d-flex gap-2">
-
-            <a href="/"
-                class="btn btn-outline-primary">
-                Dashboard
-            </a>
-
-            <a href="/manutencoes/<%= manutencao._id %>/editar"
-                class="btn btn-primary">
-                Editar
-            </a>
-
-            <form
-                action="/manutencoes/<%= manutencao._id %>/deletar"
-                method="POST"
-                onsubmit="return confirm('Deseja realmente excluir esta manutenção?')">
-
-                <button
-                    type="submit"
-                    class="btn btn-danger">
-                    Excluir
-                </button>
-
-            </form>
-
-        </div>
-
+      <section class="content-card form-card">
+        <h2 class="h5 mb-3">Observações</h2>
+        <p class="mb-0"><%= manutencao.observacoes || 'Nenhuma observação registrada.' %></p>
+      </section>
     </div>
 
-</body>
+    <div class="col-lg-4">
+      <section class="content-card form-card mb-3">
+        <h2 class="h5 mb-3">Componentes</h2>
+        <% if (manutencao.componentes && manutencao.componentes.length) { %>
+          <ul class="list-group list-group-flush">
+            <% manutencao.componentes.forEach(function(componente) { %>
+              <li class="list-group-item px-0 d-flex justify-content-between gap-2">
+                <span><%= componente.nome || 'Componente removido' %></span>
+                <span class="text-secondary"><%= componente.categoria || '-' %></span>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="text-secondary mb-0">Nenhum componente vinculado.</p>
+        <% } %>
+      </section>
 
-</html>
+      <section class="content-card form-card">
+        <div class="info-label">Valor total</div>
+        <div class="metric-value">R$ <%= Number(manutencao.valorTotal || 0).toFixed(2) %></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

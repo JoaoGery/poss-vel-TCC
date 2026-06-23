@@ -1,140 +1,75 @@
-# Sistema de Manutenção de Computadores
+# AssistTech - Sistema de Assistência Técnica
 
-Este é um projeto Node.js com Express e MongoDB para gerenciar solicitações e execução de manutenção de computadores.
+Aplicação web para gestão de assistência técnica de computadores, desenvolvida com Node.js, Express, EJS, Bootstrap e MongoDB. O sistema organiza clientes, ordens de manutenção e componentes de estoque, oferecendo um fluxo simples para abertura, acompanhamento e conclusão de serviços.
 
-## Estrutura do Projeto
+## Funcionalidades
 
-O projeto foi adaptado de um sistema de aluguel de carros para um sistema de manutenção de computadores. As principais mudanças foram:
+- Dashboard com indicadores de clientes, manutenções por status e componentes cadastrados.
+- Cadastro, edição, busca e exclusão de clientes.
+- Abertura de ordens de manutenção por cliente e equipamento.
+- Acompanhamento de status: em análise, em reparo e concluído.
+- Registro de diagnóstico técnico, observações, valor total e data de saída.
+- Catálogo de componentes com categoria, estoque, preço e fornecedor.
+- Associação de componentes utilizados em uma manutenção.
+- Autenticação básica de usuários com senha criptografada.
+- Interface responsiva e padronizada para uso em desktop e celular.
 
-### Modelos (Models)
+## Tecnologias
 
-1. **Computador** (`models/computador.js`) - Substitui o modelo de Carro
-   - serial (único)
-   - modelo
-   - marca
-   - tipo (Desktop, Notebook, Tablet, Outro)
-   - processador
-   - memoria
-   - armazenamento
-   - sistemaOperacional
-   - observacoes
-   - imagem
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- EJS
+- Bootstrap 5
+- bcryptjs
+- express-session
 
-2. **Manutenção** (`models/manutencao.js`) - Substitui o modelo de Reserva
-   - computador (referência)
-   - cliente (referência)
-   - dataSolicitacao
-   - dataInicio
-   - dataFinalizacao
-   - problemaSolicitado
-   - diagnostico
-   - servicosRealizados
-   - pecasTrocadas
-   - valorTotal
-   - status (pendente, em_andamento, finalizado, cancelado)
+## Estrutura principal
 
-3. **Cliente** - Mantido do projeto original
-4. **Usuario** - Mantido do projeto original
-
-### Controllers
-
-- `controllers/computador.js` - CRUD de computadores
-- `controllers/manutencao.js` - CRUD de manutenções (com suporte a status e relatórios)
-
-### Rotas
-
-- `/computadores` - Listar, criar, editar e deletar computadores
-- `/manutencoes` - Listar, criar, editar e deletar manutenções
-- `/clientes` - Gestão de clientes
-- `/auth` - Autenticação
-
-### Views
-
-#### Computador
-- `views/computador/list.ejs` - Listar computadores
-- `views/computador/form.ejs` - Formulário para criar/editar
-- `views/computador/view.ejs` - Visualizar detalhes
-
-#### Manutenção
-- `views/manutencao/list.ejs` - Listar manutenções com status
-- `views/manutencao/form.ejs` - Formulário para solicitação e acompanhamento
-- `views/manutencao/view.ejs` - Visualizar detalhes completos da manutenção
-
-## Fluxo de Uso
-
-### 1. Cadastrar Computadores
-Vá para `/computadores/novo` para adicionar um novo computador ao sistema. Preencha os dados básicos como serial, marca, modelo, tipo, processador, memória, armazenamento e sistema operacional.
-
-### 2. Solicitar Manutenção
-Vá para `/manutencoes/novo` para criar uma nova solicitação de manutenção. Selecione:
-- Computador a ser mantido
-- Cliente
-- Descrição do problema
-
-### 3. Acompanhar Manutenção
-Na listagem de manutenções (`/manutencoes`), você pode:
-- Ver o status atual (pendente, em andamento, finalizado, cancelado)
-- Clicar em "Editar" para atualizar:
-  - Status da manutenção
-  - Data de início e finalização
-  - Diagnóstico realizado
-  - Serviços realizados
-  - Peças trocadas
-  - Valor cobrado
-
-### 4. Relatórios
-Ao visualizar uma manutenção (`/manutencoes/:id`), você verá:
-- Informações do computador e cliente
-- Problema solicitado
-- Diagnóstico realizado
-- Serviços executados
-- Peças trocadas
-- Valor total da manutenção
-
-## Instalação e Uso
-
-```bash
-# Instalar dependências
-npm install
-
-# Executar o servidor
-npm start
-
-# Ou usar nodemon para desenvolvimento
-nodemon indexvercell.js
+```text
+controllers/      Regras das telas e operações do sistema
+models/           Modelos Mongoose de Cliente, Manutencao, Componente e Usuario
+routes/           Definição das rotas HTTP
+views/            Templates EJS renderizados pelo Express
+views/partials/   Cabeçalho e rodapé compartilhados
+public/css/       Estilos próprios da aplicação
+api/index.js      Entrada para deploy na Vercel
+index.js          Entrada para execução local
 ```
 
-O servidor rodará na porta 3001.
+## Como executar
 
-## Tecnologias Utilizadas
+1. Instale as dependências:
 
-- **Express.js** - Framework web
-- **MongoDB** - Banco de dados
-- **Mongoose** - ODM para MongoDB
-- **EJS** - Template engine
-- **Bootstrap 5** - Framework CSS
-- **Multer** - Upload de arquivos (imagens)
+```bash
+npm install
+```
 
-## Funcionalidades Principais
+2. Configure as variáveis de ambiente:
 
-✅ Cadastro e gerenciamento de computadores  
-✅ Solicitação de manutenção  
-✅ Acompanhamento de status  
-✅ Registro detalhado do que foi feito (diagnóstico, serviços, peças)  
-✅ Gestão de clientes  
-✅ Autenticação de usuários  
-✅ Upload de imagens dos computadores  
-✅ Interface responsiva com Bootstrap
+```bash
+MONGODB_URI=mongodb://127.0.0.1:27017/manutencao_computadores
+SESSION_SECRET=uma_chave_segura_para_sessao
+```
 
-## Próximas Melhorias
+3. Inicie o projeto:
 
-- Relatórios em PDF
-- Notificações por email
-- Dashboard com estatísticas
-- Histórico de manutenções por cliente/computador
-- Sistema de backup automático
-- Integração com whatsapp para notificação de clientes
+```bash
+npm start
+```
 
----
+O sistema ficará disponível em `http://localhost:3001`.
 
-**Desenvolvido adaptando o sistema de aluguel de carros para gerenciamento de manutenção de computadores.**
+## Rotas principais
+
+- `/` - Dashboard
+- `/cliente` - Gestão de clientes
+- `/manutencoes` - Gestão de ordens de manutenção
+- `/componentes` - Gestão de componentes
+- `/auth/login` - Login
+- `/auth/register` - Cadastro de usuário
+
+## Observações para apresentação
+
+Antes da demonstração, cadastre ao menos um usuário, alguns clientes, componentes e manutenções. Isso permite que o dashboard apresente indicadores e que o fluxo completo de abertura, edição e conclusão de uma manutenção fique visível para a banca.

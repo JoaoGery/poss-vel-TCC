@@ -2,6 +2,54 @@ import Manutencao from '../models/manutencao.js';
 import Componente from '../models/componente.js';
 import Cliente from '../models/cliente.js';
 
+const normalizeComponentIds = (ids = []) => {
+  const list = Array.isArray(ids) ? ids : [ids];
+  return [...new Set(list.filter(Boolean).map(String))];
+};
+
+const getComponentDiff = (previousIds = [], nextIds = []) => {
+  const previous = normalizeComponentIds(previousIds.map(id => id?._id || id));
+  const next = normalizeComponentIds(nextIds);
+
+  return {
+    added: next.filter(id => !previous.includes(id)),
+    removed: previous.filter(id => !next.includes(id))
+  };
+};
+
+const updateComponentStock = async ({ added = [], removed = [] }) => {
+  if (added.length) {
+    const available = await Componente.find({ _id: { $in: added } }).lean();
+    const unavailable = available.find(component => Number(component.quantidadeDisponivel || 0) <= 0);
+
+    if (available.length !== added.length || unavailable) {
+      const name = unavailable?.nome || 'componente selecionado';
+      const error = new Error(`Não há estoque disponível para ${name}.`);
+      error.name = 'StockError';
+      throw error;
+    }
+  }
+
+  await Promise.all([
+    ...added.map(id => Componente.updateOne({ _id: id }, { $inc: { quantidadeDisponivel: -1 } })),
+    ...removed.map(id => Componente.updateOne({ _id: id }, { $inc: { quantidadeDisponivel: 1 } }))
+  ]);
+};
+
+const renderMaintenanceForm = async (res, statusCode, manutencao, error) => {
+  const [clientes, componentes] = await Promise.all([
+    Cliente.find().sort({ nome: 1 }).lean(),
+    Componente.find().sort({ nome: 1 }).lean()
+  ]);
+
+  return res.status(statusCode).render('manutencao/form', {
+    manutencao,
+    clientes,
+    componentes,
+    error
+  });
+};
+
 export const list = async (req, res) => {
   try {
     const status = (req.query.status || '').trim();
@@ -49,7 +97,7 @@ export const formCreate = async (req, res) => {
       Cliente.find().sort({ nome: 1 }).lean(),
       Componente.find().sort({ nome: 1 }).lean()
     ]);
-    res.render('manutencao/form', { manutencao: {}, clientes, componentes });
+    res.render('manutencao/form', { manutencao: {}, clientes, componentes, error: null });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao abrir formulário de manutenção');
@@ -58,22 +106,53 @@ export const formCreate = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const { cliente: clienteId, marcaComputador, modeloComputador, descricaoProblema } = req.body;
+    const clienteId = req.body.cliente;
+    const marcaComputador = (req.body.marcaComputador || '').trim();
+    const modeloComputador = (req.body.modeloComputador || '').trim();
+    const descricaoProblema = (req.body.descricaoProblema || '').trim();
+    const componentes = normalizeComponentIds(req.body.componentes);
+
+    if (!clienteId || !marcaComputador || !modeloComputador || !descricaoProblema) {
+      return renderMaintenanceForm(
+        res,
+        400,
+        { cliente: clienteId, marcaComputador, modeloComputador, descricaoProblema, componentes },
+        'Selecione um cliente e informe os dados do equipamento e do problema.'
+      );
+    }
+
     const cliente = await Cliente.findById(clienteId);
     
     if (!cliente) return res.status(400).send('Cliente inválido');
+
+    await updateComponentStock({ added: componentes });
 
     await Manutencao.create({
       cliente: clienteId,
       marcaComputador,
       modeloComputador,
       descricaoProblema,
+      componentes,
       status: 'em_analise'
     });
 
     res.redirect('/manutencoes');
   } catch (err) {
     console.error(err);
+    if (err.name === 'StockError') {
+      return renderMaintenanceForm(
+        res,
+        400,
+        {
+          cliente: req.body.cliente,
+          marcaComputador: req.body.marcaComputador,
+          modeloComputador: req.body.modeloComputador,
+          descricaoProblema: req.body.descricaoProblema,
+          componentes: normalizeComponentIds(req.body.componentes)
+        },
+        err.message
+      );
+    }
     res.status(500).send('Erro ao criar manutenção');
   }
 };
@@ -87,7 +166,7 @@ export const formEdit = async (req, res) => {
     ]);
     
     if (!manutencao) return res.status(404).send('Manutenção não encontrada');
-    res.render('manutencao/form', { manutencao, clientes, componentes });
+    res.render('manutencao/form', { manutencao, clientes, componentes, error: null });
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao abrir edição');
@@ -96,18 +175,32 @@ export const formEdit = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const { cliente, marcaComputador, modeloComputador, descricaoProblema, diagnosticoTecnico, status, valorTotal, observacoes } = req.body;
+    const { cliente, status } = req.body;
+    const componentes = normalizeComponentIds(req.body.componentes);
+    const manutencaoAtual = await Manutencao.findById(req.params.id).lean();
+
+    if (!manutencaoAtual) return res.status(404).send('Manutenção não encontrada');
     
     const update = {
       cliente,
-      marcaComputador,
-      modeloComputador,
-      descricaoProblema,
-      diagnosticoTecnico,
+      marcaComputador: (req.body.marcaComputador || '').trim(),
+      modeloComputador: (req.body.modeloComputador || '').trim(),
+      descricaoProblema: (req.body.descricaoProblema || '').trim(),
+      diagnosticoTecnico: (req.body.diagnosticoTecnico || '').trim(),
       status,
-      valorTotal: valorTotal ? Number(valorTotal) : 0,
-      observacoes
+      componentes,
+      valorTotal: req.body.valorTotal ? Number(req.body.valorTotal) : 0,
+      observacoes: (req.body.observacoes || '').trim()
     };
+
+    if (!update.cliente || !update.marcaComputador || !update.modeloComputador || !update.descricaoProblema) {
+      return renderMaintenanceForm(
+        res,
+        400,
+        { ...manutencaoAtual, ...update, _id: req.params.id },
+        'Selecione um cliente e informe os dados do equipamento e do problema.'
+      );
+    }
 
     const unset = {};
 
@@ -119,6 +212,9 @@ export const update = async (req, res) => {
 
     Object.keys(update).forEach(k => update[k] === undefined && delete update[k]);
 
+    const stockDiff = getComponentDiff(manutencaoAtual.componentes, componentes);
+    await updateComponentStock(stockDiff);
+
     await Manutencao.findByIdAndUpdate(
       req.params.id,
       Object.keys(unset).length ? { $set: update, $unset: unset } : { $set: update },
@@ -127,13 +223,27 @@ export const update = async (req, res) => {
     res.redirect('/manutencoes');
   } catch (err) {
     console.error(err);
+    if (err.name === 'StockError') {
+      return renderMaintenanceForm(
+        res,
+        400,
+        { ...req.body, _id: req.params.id, componentes: normalizeComponentIds(req.body.componentes) },
+        err.message
+      );
+    }
     res.status(500).send('Erro ao atualizar manutenção');
   }
 };
 
 export const remove = async (req, res) => {
   try {
-    await Manutencao.findByIdAndDelete(req.params.id);
+    const manutencao = await Manutencao.findById(req.params.id).lean();
+
+    if (manutencao) {
+      await updateComponentStock({ removed: manutencao.componentes || [] });
+      await Manutencao.findByIdAndDelete(req.params.id);
+    }
+
     res.redirect('/manutencoes');
   } catch (err) {
     console.error(err);

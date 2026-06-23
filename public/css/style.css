@@ -1,0 +1,271 @@
+:root {
+  --app-bg: #f5f7fb;
+  --app-text: #172033;
+  --app-muted: #65728a;
+  --app-border: #dce3ef;
+  --app-primary: #2754d8;
+  --app-primary-dark: #1f3fa6;
+  --app-success: #0f8f62;
+  --app-warning: #c87b00;
+  --app-danger: #c43b3b;
+  --app-card: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--app-text);
+  background: var(--app-bg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+.app-navbar {
+  background: #ffffff;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.navbar-brand {
+  color: var(--app-primary) !important;
+  font-weight: 800;
+}
+
+.nav-link {
+  color: #35415a;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: var(--app-primary);
+}
+
+.app-shell {
+  min-height: calc(100vh - 130px);
+  padding: 28px 0 40px;
+}
+
+.app-footer {
+  padding: 24px 0;
+  color: var(--app-muted);
+  background: #ffffff;
+  border-top: 1px solid var(--app-border);
+  font-size: .92rem;
+}
+
+.page-heading {
+  margin-bottom: 22px;
+}
+
+.page-eyebrow {
+  margin-bottom: 4px;
+  color: var(--app-primary);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  margin: 0;
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
+  font-weight: 800;
+}
+
+.page-subtitle {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--app-muted);
+}
+
+.hero-panel {
+  padding: 32px;
+  color: #ffffff;
+  background:
+    linear-gradient(135deg, rgba(39, 84, 216, .96), rgba(14, 116, 144, .92)),
+    radial-gradient(circle at top right, rgba(255,255,255,.28), transparent 30%);
+  border-radius: 8px;
+}
+
+.hero-panel .page-eyebrow,
+.hero-panel .page-subtitle {
+  color: rgba(255,255,255,.84);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+}
+
+.metric-card,
+.action-card,
+.content-card {
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(35, 48, 80, .06);
+}
+
+.metric-card {
+  padding: 18px;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.metric-label {
+  margin-top: 8px;
+  color: var(--app-muted);
+  font-size: .92rem;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.action-card {
+  padding: 20px;
+}
+
+.action-card h3 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+
+.action-card p {
+  min-height: 48px;
+  margin: 10px 0 18px;
+  color: var(--app-muted);
+}
+
+.content-card {
+  overflow: hidden;
+}
+
+.content-card .card-header {
+  background: #ffffff;
+  border-bottom-color: var(--app-border);
+  font-weight: 800;
+}
+
+.table {
+  --bs-table-bg: #ffffff;
+}
+
+.table th {
+  color: #44506a;
+  font-size: .82rem;
+  text-transform: uppercase;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-width: 92px;
+  justify-content: center;
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.status-analysis {
+  color: #6b4700;
+  background: #fff0c2;
+}
+
+.status-repair {
+  color: #075985;
+  background: #d8f1ff;
+}
+
+.status-done {
+  color: #0d5c42;
+  background: #d9f7eb;
+}
+
+.stock-ok {
+  color: #0d5c42;
+  background: #d9f7eb;
+}
+
+.stock-low {
+  color: #6b4700;
+  background: #fff0c2;
+}
+
+.stock-out {
+  color: #7a1d1d;
+  background: #ffe0e0;
+}
+
+.filter-card {
+  padding: 18px;
+}
+
+.form-card {
+  padding: 22px;
+}
+
+.btn {
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--app-primary);
+  --bs-btn-border-color: var(--app-primary);
+  --bs-btn-hover-bg: var(--app-primary-dark);
+  --bs-btn-hover-border-color: var(--app-primary-dark);
+}
+
+.empty-state {
+  padding: 34px 18px;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.info-label {
+  color: var(--app-muted);
+  font-size: .82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.info-value {
+  margin-top: 4px;
+  font-weight: 650;
+}
+
+@media (max-width: 767.98px) {
+  .app-shell {
+    padding-top: 18px;
+  }
+
+  .hero-panel {
+    padding: 24px 18px;
+  }
+
+  .page-actions {
+    width: 100%;
+  }
+
+  .page-actions .btn {
+    flex: 1;
+  }
+
+  .table td,
+  .table th {
+    white-space: nowrap;
+  }
+}

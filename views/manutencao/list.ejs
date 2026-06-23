@@ -1,227 +1,80 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<%- include('../partials/header', { title: 'Manutenções | AssistTech' }) %>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Manutenções</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            background: #f4f7fb;
-        }
-
-        .card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,.05);
-        }
-
-        .table {
-            margin-bottom: 0;
-        }
-
-        .page-title {
-            font-weight: 700;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container py-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="page-title">Lista de Manutenções</h1>
-
-        <div class="d-flex gap-2">
-            <a href="/" class="btn btn-outline-primary">
-                Dashboard
-            </a>
-
-            <a href="/manutencoes/novo" class="btn btn-primary">
-                Nova Manutenção
-            </a>
-        </div>
+<div class="container">
+  <div class="d-flex flex-column flex-md-row justify-content-between gap-3 page-heading">
+    <div>
+      <div class="page-eyebrow">Ordens de serviço</div>
+      <h1 class="page-title">Manutenções</h1>
+      <p class="page-subtitle">Acompanhe equipamentos em análise, em reparo e concluídos.</p>
     </div>
+    <div class="d-flex gap-2 align-items-start page-actions">
+      <a href="/manutencoes/novo" class="btn btn-primary">Nova manutenção</a>
+    </div>
+  </div>
 
-    <form class="card mb-4" method="get" action="/manutencoes">
-        <div class="card-body">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-6">
-                    <label class="form-label">Pesquisar</label>
-                    <input
-                        type="search"
-                        name="q"
-                        class="form-control"
-                        value="<%= typeof q !== 'undefined' ? q : '' %>"
-                        placeholder="Marca, modelo ou problema relatado">
-                </div>
+  <form class="content-card filter-card mb-3" method="get" action="/manutencoes">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-6">
+        <label class="form-label" for="q">Pesquisar</label>
+        <input id="q" type="search" name="q" class="form-control" value="<%= typeof q !== 'undefined' ? q : '' %>" placeholder="Marca, modelo ou problema relatado">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="status">Status</label>
+        <select id="status" class="form-select" name="status">
+          <option value="">Todos</option>
+          <option value="em_analise" <%= status === 'em_analise' ? 'selected' : '' %>>Em análise</option>
+          <option value="em_reparo" <%= status === 'em_reparo' ? 'selected' : '' %>>Em reparo</option>
+          <option value="concluido" <%= status === 'concluido' ? 'selected' : '' %>>Concluído</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary flex-fill">Filtrar</button>
+      </div>
+    </div>
+  </form>
 
-                <div class="col-md-4">
-                    <label class="form-label">Status</label>
-                    <select class="form-select" name="status">
-                        <option value="">Todos</option>
-                        <option value="em_analise" <%= status === 'em_analise' ? 'selected' : '' %>>Em análise</option>
-                        <option value="em_reparo" <%= status === 'em_reparo' ? 'selected' : '' %>>Em reparo</option>
-                        <option value="concluido" <%= status === 'concluido' ? 'selected' : '' %>>Concluído</option>
-                    </select>
-                </div>
-
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-outline-primary">Filtrar</button>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    <% if (typeof success !== 'undefined' && success) { %>
-        <div class="alert alert-success">
-            <%= success %>
-        </div>
-    <% } %>
-
-    <% if (typeof error !== 'undefined' && error) { %>
-        <div class="alert alert-danger">
-            <%= error %>
-        </div>
-    <% } %>
-
+  <section class="content-card">
     <% if (!manutencoes || manutencoes.length === 0) { %>
-
-        <div class="card">
-            <div class="card-body text-center">
-                Nenhuma manutenção cadastrada.
-            </div>
-        </div>
-
+      <div class="empty-state">Nenhuma manutenção cadastrada.</div>
     <% } else { %>
-
-        <div class="card">
-
-            <div class="card-header bg-primary text-white">
-                Manutenções Cadastradas
-            </div>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Cliente</th>
-                            <th>Marca</th>
-                            <th>Modelo</th>
-                            <th>Problema</th>
-                            <th>Status</th>
-                            <th>Valor</th>
-                            <th class="text-end">Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                    <% manutencoes.forEach(function(manutencao, index){ %>
-
-                        <tr>
-
-                            <td>
-                                <%= index + 1 %>
-                            </td>
-
-                            <td>
-                                <%= manutencao.cliente?.nome || '-' %>
-                            </td>
-
-                            <td>
-                                <%= manutencao.marcaComputador || '-' %>
-                            </td>
-
-                            <td>
-                                <%= manutencao.modeloComputador || '-' %>
-                            </td>
-
-                            <td>
-                                <%= (manutencao.descricaoProblema || '').substring(0, 40) %>
-                            </td>
-
-                            <td>
-
-                                <% let badgeClass = 'bg-secondary'; let statusText = 'Sem status'; %>
-
-                                <% if (manutencao.status === 'em_analise') { %>
-                                    <% badgeClass = 'bg-warning text-dark'; statusText = 'Em análise'; %>
-                                <% } %>
-
-                                <% if (manutencao.status === 'em_reparo') { %>
-                                    <% badgeClass = 'bg-info text-dark'; statusText = 'Em reparo'; %>
-                                <% } %>
-
-                                <% if (manutencao.status === 'concluido') { %>
-                                    <% badgeClass = 'bg-success'; statusText = 'Concluído'; %>
-                                <% } %>
-
-                                <span class="badge <%= badgeClass %>">
-                                    <%= statusText %>
-                                </span>
-
-                            </td>
-
-                            <td>
-                                R$
-                                <%= Number(manutencao.valorTotal || 0).toFixed(2) %>
-                            </td>
-
-                            <td class="text-end">
-
-                                <a
-                                    href="/manutencoes/<%= manutencao._id %>"
-                                    class="btn btn-sm btn-outline-primary">
-                                    Visualizar
-                                </a>
-
-                                <a
-                                    href="/manutencoes/<%= manutencao._id %>/editar"
-                                    class="btn btn-sm btn-outline-secondary">
-                                    Editar
-                                </a>
-
-                                <form
-                                    action="/manutencoes/<%= manutencao._id %>/deletar"
-                                    method="POST"
-                                    class="d-inline"
-                                    onsubmit="return confirm('Deseja realmente excluir esta manutenção?')">
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-sm btn-outline-danger">
-                                        Excluir
-                                    </button>
-
-                                </form>
-
-                            </td>
-
-                        </tr>
-
-                    <% }) %>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cliente</th>
+              <th>Equipamento</th>
+              <th>Problema</th>
+              <th>Status</th>
+              <th>Valor</th>
+              <th class="text-end">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% manutencoes.forEach(function(manutencao, index){ %>
+              <% const statusMap = { em_analise: ['status-analysis', 'Em análise'], em_reparo: ['status-repair', 'Em reparo'], concluido: ['status-done', 'Concluído'] }; %>
+              <% const statusInfo = statusMap[manutencao.status] || ['bg-secondary text-white', 'Sem status']; %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><strong><%= manutencao.cliente?.nome || '-' %></strong></td>
+                <td><%= manutencao.marcaComputador || '-' %> <%= manutencao.modeloComputador || '' %></td>
+                <td><%= (manutencao.descricaoProblema || '-').substring(0, 48) %><%= (manutencao.descricaoProblema || '').length > 48 ? '...' : '' %></td>
+                <td><span class="status-badge <%= statusInfo[0] %>"><%= statusInfo[1] %></span></td>
+                <td>R$ <%= Number(manutencao.valorTotal || 0).toFixed(2) %></td>
+                <td class="text-end">
+                  <a href="/manutencoes/<%= manutencao._id %>" class="btn btn-sm btn-outline-primary">Ver</a>
+                  <a href="/manutencoes/<%= manutencao._id %>/editar" class="btn btn-sm btn-outline-secondary">Editar</a>
+                  <form action="/manutencoes/<%= manutencao._id %>/deletar" method="POST" class="d-inline" onsubmit="return confirm('Deseja realmente excluir esta manutenção?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
     <% } %>
-
+  </section>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+<%- include('../partials/footer') %>
