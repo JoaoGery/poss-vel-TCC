@@ -1,4 +1,16 @@
 import Componente from '../models/componente.js';
+import Manutencao from '../models/manutencao.js';
+import { parsePositiveNumber, sanitizeText } from '../utils/validators.js';
+import { setFlash } from '../utils/flash.js';
+
+const componentData = (body = {}) => ({
+  nome: sanitizeText(body.nome),
+  categoria: sanitizeText(body.categoria),
+  quantidadeDisponivel: parsePositiveNumber(body.quantidadeDisponivel),
+  precoUnitario: parsePositiveNumber(body.precoUnitario),
+  descricao: sanitizeText(body.descricao),
+  fornecedor: sanitizeText(body.fornecedor)
+});
 
 export const list = async (req, res) => {
   try {
@@ -43,14 +55,7 @@ export const formCreate = (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const data = {
-      nome: (req.body.nome || '').trim(),
-      categoria: req.body.categoria,
-      quantidadeDisponivel: req.body.quantidadeDisponivel ? Number(req.body.quantidadeDisponivel) : 0,
-      precoUnitario: req.body.precoUnitario ? Number(req.body.precoUnitario) : 0,
-      descricao: (req.body.descricao || '').trim(),
-      fornecedor: (req.body.fornecedor || '').trim()
-    };
+    const data = componentData(req.body);
 
     if (!data.nome || !data.categoria) {
       return res.status(400).render('componente/form', {
@@ -60,7 +65,8 @@ export const create = async (req, res) => {
     }
 
     await Componente.create(data);
-    res.redirect('/componentes');
+    setFlash(req, 'success', 'Componente cadastrado no estoque.');
+    return res.redirect('/componentes');
   } catch (err) {
     console.error(err);
     res.status(400).render('componente/form', { componente: req.body, error: 'Erro ao criar componente.' });
@@ -80,14 +86,7 @@ export const formEdit = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const update = {
-      nome: (req.body.nome || '').trim(),
-      categoria: req.body.categoria,
-      quantidadeDisponivel: req.body.quantidadeDisponivel ? Number(req.body.quantidadeDisponivel) : 0,
-      precoUnitario: req.body.precoUnitario ? Number(req.body.precoUnitario) : 0,
-      descricao: (req.body.descricao || '').trim(),
-      fornecedor: (req.body.fornecedor || '').trim()
-    };
+    const update = componentData(req.body);
 
     if (!update.nome || !update.categoria) {
       return res.status(400).render('componente/form', {
@@ -98,8 +97,10 @@ export const update = async (req, res) => {
 
     Object.keys(update).forEach(k => update[k] === undefined && delete update[k]);
 
-    await Componente.findByIdAndUpdate(req.params.id, update, { runValidators: true });
-    res.redirect('/componentes');
+    const componente = await Componente.findByIdAndUpdate(req.params.id, update, { runValidators: true, new: true });
+    if (!componente) return res.status(404).render('error', { statusCode: 404, title: 'Componente não encontrado', message: 'O componente que você tentou atualizar não existe.' });
+    setFlash(req, 'success', 'Componente atualizado com sucesso.');
+    return res.redirect('/componentes');
   } catch (err) {
     console.error(err);
     res.status(400).render('componente/form', { componente: { ...req.body, _id: req.params.id }, error: 'Erro ao atualizar componente.' });
@@ -108,8 +109,18 @@ export const update = async (req, res) => {
 
 export const remove = async (req, res) => {
   try {
+    const componente = await Componente.findById(req.params.id);
+    if (!componente) return res.redirect('/componentes');
+
+    const emUso = await Manutencao.exists({ componentes: componente._id });
+    if (emUso) {
+      setFlash(req, 'warning', 'Este componente está vinculado a uma ordem de serviço e não pode ser excluído.');
+      return res.redirect('/componentes');
+    }
+
     await Componente.findByIdAndDelete(req.params.id);
-    res.redirect('/componentes');
+    setFlash(req, 'success', 'Componente excluído do estoque.');
+    return res.redirect('/componentes');
   } catch (err) {
     console.error(err);
     res.status(500).send('Erro ao excluir componente');

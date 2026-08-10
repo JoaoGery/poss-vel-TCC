@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const ManutencaoSchema = new mongoose.Schema({
+  numeroOrdem: { type: String, unique: true, sparse: true, trim: true },
   cliente: { type: mongoose.Schema.Types.ObjectId, ref: 'Cliente', required: true },
   marcaComputador: { type: String, required: true, trim: true },
   modeloComputador: { type: String, required: true, trim: true },

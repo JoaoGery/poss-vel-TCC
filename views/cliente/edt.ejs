@@ -40,11 +40,14 @@
       </div>
       <div class="col-md-4">
         <label for="cidade" class="form-label">Cidade</label>
-        <input type="text" class="form-control" id="cidade" name="cidade" value="<%= cliente.cidade || '' %>">
+        <input type="text" class="form-control" id="cidade" name="cidade" value="<%= cliente.cidade || '' %>" list="lista-cidades" data-cidade autocomplete="address-level2" placeholder="Escolha primeiro o estado">
+        <datalist id="lista-cidades" data-lista-cidades></datalist>
       </div>
       <div class="col-md-4">
         <label for="estado" class="form-label">Estado</label>
-        <input type="text" maxlength="2" class="form-control" id="estado" name="estado" value="<%= cliente.estado || '' %>">
+        <select class="form-select" id="estado" name="estado" data-estado autocomplete="address-level1">
+          <%- include('../partials/estados', { estadoSelecionado: cliente.estado || '' }) %>
+        </select>
       </div>
       <div class="col-md-4">
         <label for="cep" class="form-label">CEP</label>

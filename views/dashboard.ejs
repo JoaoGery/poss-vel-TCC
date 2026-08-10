@@ -1,6 +1,7 @@
 <%- include('partials/header', { title: 'Dashboard | AssistTech' }) %>
 
 <div class="container">
+  <%- include('partials/flash') %>
   <section class="hero-panel page-heading">
     <div class="page-eyebrow">Painel operacional</div>
     <h1 class="page-title">Sistema de Assistência Técnica</h1>
@@ -32,6 +33,10 @@
       <div class="metric-value"><%= totalComponentes || 0 %></div>
       <div class="metric-label">Componentes no catálogo</div>
     </div>
+    <div class="metric-card">
+      <div class="metric-value text-success">R$ <%= Number(faturamentoConcluido || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></div>
+      <div class="metric-label">Faturamento concluído</div>
+    </div>
   </section>
 
   <section class="action-grid mb-4">
@@ -60,6 +65,27 @@
       </div>
     </div>
   </section>
+
+  <% if (componentesBaixos && componentesBaixos.length > 0) { %>
+    <section class="content-card mb-4" aria-labelledby="estoque-baixo-title">
+      <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+        <div>
+          <span id="estoque-baixo-title">Atenção ao estoque</span>
+          <small class="d-block text-secondary fw-normal">Itens com cinco unidades ou menos</small>
+        </div>
+        <a class="btn btn-sm btn-outline-primary" href="/componentes">Gerenciar estoque</a>
+      </div>
+      <div class="list-group list-group-flush">
+        <% componentesBaixos.forEach(function(componente) { %>
+          <% const stockClass = componente.quantidadeDisponivel > 0 ? 'stock-low' : 'stock-out'; %>
+          <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-3" href="/componentes/<%= componente._id %>">
+            <span><strong><%= componente.nome %></strong><small class="d-block text-secondary"><%= componente.categoria %></small></span>
+            <span class="status-badge <%= stockClass %>"><%= componente.quantidadeDisponivel %> un.</span>
+          </a>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
 
   <section class="content-card">
     <div class="card-header d-flex justify-content-between align-items-center">

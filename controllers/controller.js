@@ -10,19 +10,30 @@
             const { default: Componente } = await import('../models/componente.js');
 
             // Buscar estatísticas
-            const totalClientes = await Cliente.countDocuments();
-            const totalManutencoes = await Manutencao.countDocuments();
-            const totalEmAnalise = await Manutencao.countDocuments({ status: 'em_analise' });
-            const totalEmReparo = await Manutencao.countDocuments({ status: 'em_reparo' });
-            const totalConcluidas = await Manutencao.countDocuments({ status: 'concluido' });
-            const totalComponentes = await Componente.countDocuments();
-
-            // Buscar manutenções recentes
-            const manutencoes = await Manutencao.find()
-              .populate('cliente')
-              .sort({ dataEntrada: -1 })
-              .limit(5)
-              .lean();
+            const [
+              totalClientes,
+              totalManutencoes,
+              totalEmAnalise,
+              totalEmReparo,
+              totalConcluidas,
+              totalComponentes,
+              faturamento,
+              componentesBaixos,
+              manutencoes
+            ] = await Promise.all([
+              Cliente.countDocuments(),
+              Manutencao.countDocuments(),
+              Manutencao.countDocuments({ status: 'em_analise' }),
+              Manutencao.countDocuments({ status: 'em_reparo' }),
+              Manutencao.countDocuments({ status: 'concluido' }),
+              Componente.countDocuments(),
+              Manutencao.aggregate([
+                { $match: { status: 'concluido' } },
+                { $group: { _id: null, total: { $sum: '$valorTotal' } } }
+              ]),
+              Componente.find({ quantidadeDisponivel: { $lte: 5 } }).sort({ quantidadeDisponivel: 1, nome: 1 }).limit(5).lean(),
+              Manutencao.find().populate('cliente').sort({ dataEntrada: -1 }).limit(5).lean()
+            ]);
 
             res.render('dashboard', {
               totalClientes,
@@ -31,6 +42,8 @@
               totalEmReparo,
               totalConcluidas,
               totalComponentes,
+              faturamentoConcluido: faturamento[0]?.total || 0,
+              componentesBaixos,
               manutencoes
             });
           } catch (err) {
@@ -42,6 +55,8 @@
               totalEmReparo: 0, 
               totalConcluidas: 0, 
               totalComponentes: 0,
+              faturamentoConcluido: 0,
+              componentesBaixos: [],
               manutencoes: []
             });
           }
@@ -57,4 +72,3 @@
 
     }
  }
-

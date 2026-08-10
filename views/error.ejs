@@ -1,0 +1,12 @@
+<%- include('partials/header', { title: title + ' | AssistTech' }) %>
+
+<div class="container error-page">
+  <section class="content-card error-card text-center">
+    <div class="error-code"><%= statusCode %></div>
+    <h1 class="page-title"><%= title %></h1>
+    <p class="page-subtitle mx-auto"><%= message %></p>
+    <a class="btn btn-primary mt-3" href="/">Voltar ao painel</a>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

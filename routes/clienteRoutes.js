@@ -1,8 +1,10 @@
 import express from 'express';
 import * as clienteController from '../controllers/cliente.js';
+import { ensureAuthenticated } from '../middlewares/auth.js';
 
 const router = express.Router();
 
+router.use(ensureAuthenticated);
 router.get('/', clienteController.list);
 router.get(['/novo', '/add'], clienteController.formCreate);
 router.post(['/', '/add'], clienteController.create);

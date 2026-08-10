@@ -7,11 +7,12 @@
   <div class="d-flex flex-column flex-md-row justify-content-between gap-3 page-heading">
     <div>
       <div class="page-eyebrow">Ordem de serviço</div>
-      <h1 class="page-title">Detalhes da manutenção</h1>
+      <h1 class="page-title"><%= manutencao.numeroOrdem || 'Detalhes da manutenção' %></h1>
       <p class="page-subtitle"><%= manutencao.marcaComputador || '-' %> <%= manutencao.modeloComputador || '' %> para <%= manutencao.cliente?.nome || 'cliente removido' %>.</p>
     </div>
     <div class="d-flex gap-2 align-items-start page-actions">
       <a href="/manutencoes" class="btn btn-outline-secondary">Voltar</a>
+      <button type="button" class="btn btn-outline-primary" onclick="window.print()">Imprimir</button>
       <a href="/manutencoes/<%= manutencao._id %>/editar" class="btn btn-primary">Editar</a>
     </div>
   </div>

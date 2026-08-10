@@ -1,15 +1,24 @@
 <%- include('../partials/header', { title: 'Cadastrar usuário | AssistTech' }) %>
 
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-7 col-lg-5">
+<div class="container auth-page">
+  <div class="auth-card auth-card-register">
+    <section class="auth-intro">
+      <div class="auth-intro-mark" aria-hidden="true">A</div>
+      <div class="page-eyebrow">Primeiro acesso</div>
+      <h1>Comece a organizar a sua assistência técnica.</h1>
+      <p>Crie o usuário que terá acesso ao painel de gestão do projeto.</p>
+      <div class="auth-security-note"><span aria-hidden="true">✓</span> Dados protegidos por autenticação</div>
+    </section>
+
+    <section class="auth-form-area" aria-labelledby="register-title">
       <div class="page-heading text-center">
         <div class="page-eyebrow">Novo acesso</div>
-        <h1 class="page-title">Cadastrar usuário</h1>
+        <h1 class="page-title" id="register-title">Criar conta</h1>
         <p class="page-subtitle mx-auto">Crie uma conta para operar o sistema de assistência técnica.</p>
       </div>
 
-      <div class="content-card form-card">
+      <div class="auth-form">
+        <%- include('../partials/flash') %>
         <% if (error) { %>
           <div class="alert alert-danger"><%= error %></div>
         <% } %>
@@ -31,13 +40,11 @@
             <div class="form-text">Use no mínimo 6 caracteres.</div>
           </div>
 
-          <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
-            <a class="btn btn-outline-secondary" href="/auth/login">Já tenho conta</a>
-            <button class="btn btn-primary" type="submit">Cadastrar</button>
-          </div>
+          <button class="btn btn-primary w-100" type="submit">Criar conta</button>
+          <p class="auth-switch mb-0">Já possui acesso? <a href="/auth/login">Entrar no sistema</a></p>
         </form>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 

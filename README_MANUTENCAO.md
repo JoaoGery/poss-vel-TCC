@@ -11,6 +11,10 @@ Aplicação web para gestão de assistência técnica de computadores, desenvolv
 - Registro de diagnóstico técnico, observações, valor total e data de saída.
 - Catálogo de componentes com categoria, estoque, preço e fornecedor.
 - Associação de componentes utilizados em uma manutenção.
+- Geração automática de número de ordem de serviço (ex.: `OS-2026-0001`).
+- Baixa e devolução de estoque com validação de disponibilidade.
+- Alertas de estoque baixo e faturamento de serviços concluídos no dashboard.
+- Impressão dos detalhes da ordem de serviço.
 - Autenticação básica de usuários com senha criptografada.
 - Interface responsiva e padronizada para uso em desktop e celular.
 
@@ -24,6 +28,7 @@ Aplicação web para gestão de assistência técnica de computadores, desenvolv
 - Bootstrap 5
 - bcryptjs
 - express-session
+- connect-mongo
 
 ## Estrutura principal
 
@@ -69,6 +74,12 @@ O sistema ficará disponível em `http://localhost:3001`.
 - `/componentes` - Gestão de componentes
 - `/auth/login` - Login
 - `/auth/register` - Cadastro de usuário
+
+## Regras de negócio importantes
+
+- Cada componente selecionado em uma ordem consome uma unidade do estoque; ao removê-lo da ordem ou excluir a ordem, a unidade é devolvida.
+- Clientes e componentes vinculados a ordens de serviço não podem ser excluídos, preservando a rastreabilidade dos atendimentos.
+- Ao concluir uma ordem, a data de saída é registrada automaticamente e o valor entra no faturamento exibido no painel.
 
 ## Observações para apresentação
 

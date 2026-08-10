@@ -1,0 +1,7 @@
+<% if (flash && flash.message) { %>
+  <% const alertClass = flash.type === 'success' ? 'alert-success' : flash.type === 'warning' ? 'alert-warning' : 'alert-danger'; %>
+  <div class="alert <%= alertClass %> alert-dismissible fade show app-alert" role="alert">
+    <%= flash.message %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+  </div>
+<% } %>

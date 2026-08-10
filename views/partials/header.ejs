@@ -10,28 +10,30 @@
 <body>
   <nav class="navbar navbar-expand-lg app-navbar">
     <div class="container">
-      <a class="navbar-brand" href="/">AssistTech</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="mainNav">
-        <ul class="navbar-nav ms-auto align-items-lg-center">
-          <li class="nav-item"><a class="nav-link" href="/">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="/cliente">Clientes</a></li>
-          <li class="nav-item"><a class="nav-link" href="/manutencoes">Manutenções</a></li>
-          <li class="nav-item"><a class="nav-link" href="/componentes">Componentes</a></li>
-          <% if (currentUser) { %>
-            <li class="nav-item ms-lg-3 text-secondary small">Olá, <%= currentUser %></li>
+      <a class="navbar-brand" href="<%= currentUser ? '/' : '/auth/login' %>">
+        <span class="brand-mark" aria-hidden="true">A</span> AssistTech
+      </a>
+      <% if (currentUser) { %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center">
+            <li class="nav-item"><a class="nav-link <%= currentPath === '/' ? 'active' : '' %>" href="/">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/cliente') ? 'active' : '' %>" href="/cliente">Clientes</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/manutencoes') ? 'active' : '' %>" href="/manutencoes">Manutenções</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/componentes') ? 'active' : '' %>" href="/componentes">Componentes</a></li>
+            <li class="nav-item ms-lg-3 nav-user">Olá, <%= currentUser %></li>
             <li class="nav-item ms-lg-2">
               <form action="/auth/logout" method="post">
                 <button class="btn btn-sm btn-outline-secondary" type="submit">Sair</button>
               </form>
             </li>
-          <% } else { %>
-            <li class="nav-item ms-lg-3"><a class="btn btn-sm btn-primary" href="/auth/login">Entrar</a></li>
-          <% } %>
-        </ul>
-      </div>
+          </ul>
+        </div>
+      <% } else { %>
+        <a class="btn btn-sm btn-outline-primary" href="/auth/login">Área restrita</a>
+      <% } %>
     </div>
   </nav>
   <main class="app-shell">

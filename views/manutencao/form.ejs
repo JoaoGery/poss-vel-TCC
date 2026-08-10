@@ -43,6 +43,21 @@
         <textarea id="descricaoProblema" class="form-control" rows="4" name="descricaoProblema" required><%= manutencao.descricaoProblema || '' %></textarea>
       </div>
 
+      <div class="col-12">
+        <label class="form-label" for="componentes">Componentes utilizados</label>
+        <% const selecionados = (manutencao.componentes || []).map(function(id) { return String(id._id || id); }); %>
+        <select id="componentes" class="form-select" name="componentes" multiple size="5">
+          <% componentes.forEach(function(componente){ %>
+            <% const selecionado = selecionados.includes(String(componente._id)); %>
+            <% const semEstoque = Number(componente.quantidadeDisponivel || 0) <= 0; %>
+            <option value="<%= componente._id %>" <%= selecionado ? 'selected' : '' %> <%= semEstoque && !selecionado ? 'disabled' : '' %>>
+              <%= componente.nome %> - <%= componente.categoria %> (estoque: <%= componente.quantidadeDisponivel %><%= semEstoque && !selecionado ? ' - indisponível' : '' %>)
+            </option>
+          <% }) %>
+        </select>
+        <div class="form-text">Use Ctrl ou Cmd para selecionar mais de um item.</div>
+      </div>
+
       <% if (manutencao._id) { %>
         <div class="col-md-6">
           <label class="form-label" for="status">Status</label>
@@ -61,21 +76,6 @@
         <div class="col-12">
           <label class="form-label" for="diagnosticoTecnico">Diagnóstico técnico</label>
           <textarea id="diagnosticoTecnico" class="form-control" rows="4" name="diagnosticoTecnico"><%= manutencao.diagnosticoTecnico || '' %></textarea>
-        </div>
-
-        <div class="col-12">
-          <label class="form-label" for="componentes">Componentes utilizados</label>
-          <% const selecionados = (manutencao.componentes || []).map(function(id) { return String(id._id || id); }); %>
-          <select id="componentes" class="form-select" name="componentes" multiple size="5">
-            <% componentes.forEach(function(componente){ %>
-              <% const selecionado = selecionados.includes(String(componente._id)); %>
-              <% const semEstoque = Number(componente.quantidadeDisponivel || 0) <= 0; %>
-              <option value="<%= componente._id %>" <%= selecionado ? 'selected' : '' %> <%= semEstoque && !selecionado ? 'disabled' : '' %>>
-                <%= componente.nome %> - <%= componente.categoria %> (estoque: <%= componente.quantidadeDisponivel %><%= semEstoque && !selecionado ? ' - indisponível' : '' %>)
-              </option>
-            <% }) %>
-          </select>
-          <div class="form-text">Use Ctrl ou Cmd para selecionar mais de um item.</div>
         </div>
 
         <div class="col-12">
