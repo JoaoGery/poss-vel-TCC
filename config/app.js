@@ -14,7 +14,11 @@ import routeRouter from '../routes/route.js';
 
 dotenv.config();
 
-const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/manutencao_computadores';
+const mongoUrl = process.env.MONGODB_URI;
+
+if (!mongoUrl) {
+  throw new Error('Defina a variável MONGODB_URI no arquivo .env');
+}
 
 export const connectDatabase = async () => {
   if (mongoose.connection.readyState !== 0) return;
