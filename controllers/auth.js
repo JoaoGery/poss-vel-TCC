@@ -19,6 +19,14 @@ export const register = async (req, res) => {
       });
     }
 
+    const usuarioExistente = await Usuario.findOne({ email });
+    if (usuarioExistente) {
+      return res.status(400).render('auth/register', {
+        error: 'E-mail já cadastrado.',
+        user: { nome, email }
+      });
+    }
+
     await Usuario.create({ nome, email, senha });
     setFlash(req, 'success', 'Cadastro realizado. Entre com suas credenciais para acessar o sistema.');
     return res.redirect('/auth/login');
